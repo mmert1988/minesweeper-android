@@ -7,8 +7,6 @@ import java.util.Set;
 import android.util.Pair;
 
 public class Field {
-	private static final Random randomRows = new Random();
-	private static final Random randomColumns = new Random();
 
 	public static Field random(int rows, int columns, int randomMines) {
 		Set<Pair<Integer, Integer>> randomMineCoords = generateRandomMineCoords(rows, columns, randomMines);
@@ -25,8 +23,8 @@ public class Field {
 	}
 	
 	private static Pair<Integer, Integer> generateRandomCoord(int rows, int columns) {
-		int randomRow = randomRows.nextInt(rows);
-		int randomColumn = randomColumns.nextInt(columns);
+		int randomRow = (int)(Math.random()*17)%rows;//randomRows.nextInt(rows);
+		int randomColumn = (int)(Math.random()*17)%columns;
 		return new Pair<Integer, Integer>(randomRow, randomColumn);
 	}
 
