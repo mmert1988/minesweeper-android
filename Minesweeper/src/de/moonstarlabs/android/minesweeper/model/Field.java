@@ -6,6 +6,6 @@ public interface Field {
 
 	public abstract int getCountCells();
 	
-	public abstract int getMinedNeighboursCount(int position);
+	public abstract int calculateMinedNeighbours(int position);
 
 }

@@ -94,7 +94,7 @@ public class RectangularField extends Observable implements Field {
 	}
 
 	@Override
-	public int getMinedNeighboursCount(int position) {
+	public int calculateMinedNeighbours(int position) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
