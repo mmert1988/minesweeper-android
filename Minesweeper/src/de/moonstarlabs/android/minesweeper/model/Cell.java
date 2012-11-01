@@ -10,10 +10,6 @@ public class Cell {
 		this.isMined = isMined;
 	}
 	
-	void setMined(boolean isMined) {
-		this.isMined = isMined;
-	}
-	
 	public boolean isMined() {
 		return isMined;
 	}

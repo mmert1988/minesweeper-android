@@ -48,12 +48,8 @@ public class RectangularField extends Observable implements Field {
 	private void initField() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				cells[i][j] = new Cell(false);
+				cells[i][j] = new Cell(mineCoords.contains(new Pair<Integer, Integer>(i, j)));
 			}
-		}
-
-		for (Pair<Integer, Integer> mineCoord : mineCoords) {
-			cells[mineCoord.first][mineCoord.second].setMined(true);
 		}
 
 		for (int i = 0; i < rows; i++) {
