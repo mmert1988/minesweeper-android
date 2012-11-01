@@ -6,11 +6,11 @@ import java.util.Set;
 
 import android.util.Pair;
 
-public class RectangularField extends Observable implements Field {
+public class TwoDimArrayField extends Observable implements Field {
 
 	public static Field random(int rows, int columns, int randomMines) {
 		Set<Pair<Integer, Integer>> randomMineCoords = generateRandomMineCoords(rows, columns, randomMines);
-		return new RectangularField(rows, columns, randomMineCoords);
+		return new TwoDimArrayField(rows, columns, randomMineCoords);
 	}
 
 	private static Set<Pair<Integer, Integer>> generateRandomMineCoords(int rows, int columns, int randomMines) {
@@ -34,7 +34,7 @@ public class RectangularField extends Observable implements Field {
 //	private final int mines;
 	private final Set<Pair<Integer, Integer>> mineCoords;
 
-	private RectangularField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
+	private TwoDimArrayField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
 		if (rows * columns < mineCoords.size()) {
 			throw new IllegalArgumentException();
 		}
