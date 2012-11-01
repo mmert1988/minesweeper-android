@@ -23,7 +23,7 @@ public class RectangularField extends Observable implements Field {
 	}
 
 	private static Pair<Integer, Integer> generateRandomCoord(int rows, int columns) {
-		int randomRow = (int) (Math.random() * 17) % rows;// randomRows.nextInt(rows);
+		int randomRow = (int) (Math.random() * 17) % rows;
 		int randomColumn = (int) (Math.random() * 17) % columns;
 		return new Pair<Integer, Integer>(randomRow, randomColumn);
 	}
@@ -79,20 +79,21 @@ public class RectangularField extends Observable implements Field {
 
 	@Override
 	public Cell getCell(int position) {
-		// TODO Auto-generated method stub
-		return null;
+		int row = position / rows;
+		int column = position % columns;
+		return cells[row][column];
 	}
 
 	@Override
 	public int getCountCells() {
-		// TODO Auto-generated method stub
-		return 0;
+		return rows * columns;
 	}
 
 	@Override
 	public int calculateMinedNeighbours(int position) {
-		// TODO Auto-generated method stub
-		return 0;
+		int row = position / rows;
+		int column = position % columns;
+		return computeMinedNeighbours(row, column);
 	}
 
 }
