@@ -5,5 +5,7 @@ public interface Field {
 	public abstract Cell getCell(int position);
 
 	public abstract int getCountCells();
+	
+	public abstract int getMinedNeighboursCount(int position);
 
 }
