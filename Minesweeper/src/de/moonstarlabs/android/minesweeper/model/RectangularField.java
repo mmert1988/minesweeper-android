@@ -51,12 +51,6 @@ public class RectangularField extends Observable implements Field {
 				cells[i][j] = new Cell(mineCoords.contains(new Pair<Integer, Integer>(i, j)));
 			}
 		}
-
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				computeMinedNeighbours(i, j);
-			}
-		}
 	}
 
 	private int computeMinedNeighbours(int row, int column) {
