@@ -32,8 +32,8 @@ public class RectangularField extends Observable implements Field {
 	public final int columns;
 	private final Cell[][] cells;
 	private final Set<Pair<Integer, Integer>> mineCoords;
-
-	private RectangularField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
+	
+	public RectangularField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
 		if (rows * columns < mineCoords.size()) {
 			throw new IllegalArgumentException();
 		}
