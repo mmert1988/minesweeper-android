@@ -58,11 +58,11 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	
 	public void setOpenCellMode() {
 		clickModeState = openCellClickModeState;
-		switchClickModeButton.setImageResource(R.drawable.flag);
+		switchClickModeButton.setImageResource(R.drawable.mine);
 	}
 	
 	public void setToggleMarkMode() {
 		clickModeState = setFlagClickModeState;
-		switchClickModeButton.setImageResource(R.drawable.mine);
+		switchClickModeButton.setImageResource(R.drawable.flag);
 	}
 }
