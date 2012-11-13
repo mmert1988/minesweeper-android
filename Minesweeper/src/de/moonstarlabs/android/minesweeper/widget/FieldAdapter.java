@@ -5,7 +5,7 @@ import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
@@ -43,17 +43,19 @@ public class FieldAdapter implements ListAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Cell cell = mField.getCell(position);
-		View view = convertView;
+		View view =  convertView;
+		
 		if (view == null) {
 			LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			view = inflater.inflate(R.layout.cell_view, null);
+			view = inflater.inflate(R.layout.cell, null);
 		}
 		
-		ImageButton button = (ImageButton) view.findViewById(R.id.cellButton);
-
+		ImageView button = (ImageView) view.findViewById(R.id.cellView);
+		
 		if (cell.isMarked()) {
 			button.setImageResource(R.drawable.flag);
 		} else if (cell.isOpen()) {
+			button.setBackgroundResource(R.drawable.cell_background_pressed);
 			if (cell.isMined()) {
 				button.setImageResource(R.drawable.mine);
 			} else {
