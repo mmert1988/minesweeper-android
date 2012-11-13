@@ -2,11 +2,12 @@ package de.moonstarlabs.android.minesweeper.model;
 
 import java.util.HashSet;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 
 import android.util.Pair;
 
-public class RectangularField extends Observable implements Field {
+public class RectangularField extends Observable implements Field, Observer {
 
 	public static Field random(int rows, int columns, int randomMines) {
 		Set<Pair<Integer, Integer>> randomMineCoords = generateRandomMineCoords(rows, columns, randomMines);
@@ -45,10 +46,57 @@ public class RectangularField extends Observable implements Field {
 		initField();
 	}
 
+	@Override
+	public Cell getCell(int position) {
+		int row = position / rows;
+		int column = position % columns;
+		return cells[row][column];
+	}
+
+	@Override
+	public int getCountCells() {
+		return rows * columns;
+	}
+
+	@Override
+	public int calculateMinedNeighbours(int position) {
+		int row = position / rows;
+		int column = position % columns;
+		return computeMinedNeighbours(row, column);
+	}
+	
+	@Override
+	public void openCell(int position) {
+		getCell(position).open();
+	}
+
+	@Override
+	public void toggleMarkCell(int position) {
+		Cell cell = getCell(position);
+		if (cell.isMarked()) {
+			cell.unmark();
+		} else {
+			cell.mark();
+		}
+	}
+	
+	@Override
+	public void openAllMinedCells() {
+		for (Pair<Integer, Integer> coord: mineCoords) {
+			cells[coord.first][coord.second].open();
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		notifyObservers();
+	}
+	
 	private void initField() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				cells[i][j] = new Cell(mineCoords.contains(new Pair<Integer, Integer>(i, j)));
+				cells[i][j].addObserver(this);
 			}
 		}
 	}
@@ -70,24 +118,5 @@ public class RectangularField extends Observable implements Field {
 		}
 		return minedNeighbours;
 	}
-
-	@Override
-	public Cell getCell(int position) {
-		int row = position / rows;
-		int column = position % columns;
-		return cells[row][column];
-	}
-
-	@Override
-	public int getCountCells() {
-		return rows * columns;
-	}
-
-	@Override
-	public int calculateMinedNeighbours(int position) {
-		int row = position / rows;
-		int column = position % columns;
-		return computeMinedNeighbours(row, column);
-	}
-
+	
 }

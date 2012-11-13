@@ -3,15 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageButton
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" >
+
+        <ImageButton
+            android:id="@+id/switchClickMode"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/cell_background"
+            android:contentDescription="@string/content_description_switch_click_mode_button"
+            android:onClick="onClick" />
+    </FrameLayout>
 
     <de.moonstarlabs.android.minesweeper.widget.RectangularFieldView
         android:id="@+id/fieldView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:columnWidth="48dp" />
+        android:columnWidth="50dp" />
 
 </TableLayout>

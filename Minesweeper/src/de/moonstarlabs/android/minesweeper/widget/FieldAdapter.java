@@ -1,27 +1,26 @@
 package de.moonstarlabs.android.minesweeper.widget;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
 
-public class FieldAdapter implements ListAdapter {
+public class FieldAdapter extends BaseAdapter implements Observer {
 	private Context mContext;
 	private final Field mField;
-	private Set<DataSetObserver> dataSetObserver = new HashSet<DataSetObserver>();
 
 	public FieldAdapter(Context context, Field field) {
 		mContext = context;
 		mField = field;
+		((Observable) mField).addObserver(this);
 	}
 
 	@Override
@@ -89,16 +88,6 @@ public class FieldAdapter implements ListAdapter {
 	}
 
 	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
-		dataSetObserver.add(observer);
-	}
-
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
-		dataSetObserver.remove(observer);
-	}
-
-	@Override
 	public boolean areAllItemsEnabled() {
 		return true;
 	}
@@ -110,6 +99,11 @@ public class FieldAdapter implements ListAdapter {
 	
 	public Field getField() {
 		return mField;
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		notifyDataSetChanged();
 	}
 
 }

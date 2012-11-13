@@ -1,45 +1,68 @@
 package de.moonstarlabs.android.minesweeper;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
-import android.widget.GridView;
-import de.moonstarlabs.android.minesweeper.model.Field;
-import de.moonstarlabs.android.minesweeper.model.RectangularField;
-import de.moonstarlabs.android.minesweeper.widget.FieldAdapter;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
+import de.moonstarlabs.android.minesweeper.game.ClickModeState;
+import de.moonstarlabs.android.minesweeper.game.Game;
+import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
+import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
+import de.moonstarlabs.android.minesweeper.game.Game.DifficultyLevel;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends Activity implements OnClickListener, OnItemClickListener {
+	private static final ClickModeState openCellClickModeState = new OpenCellModeState();
+	private static final ClickModeState setFlagClickModeState = new ToggleMarkModeState();
+	
+	private Game game;
+	private ImageButton switchClickModeButton;
+	private ClickModeState clickModeState;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Set<Pair<Integer, Integer>> mineCoords = new HashSet<Pair<Integer, Integer>>();
-		mineCoords.add(new Pair<Integer, Integer>(0, 0));
-		mineCoords.add(new Pair<Integer, Integer>(1, 1));
-		mineCoords.add(new Pair<Integer, Integer>(2, 2));
-		mineCoords.add(new Pair<Integer, Integer>(3, 3));
-		mineCoords.add(new Pair<Integer, Integer>(4, 4));
-		Field field = new RectangularField(5, 5, mineCoords);
-		field.getCell(0).open();
-		field.getCell(1).open();
-		FieldAdapter adapter = new FieldAdapter(this, field);
-//		FieldView fieldView = (FieldView) findViewById(R.id.fieldView);
+		game = new Game(this, DifficultyLevel.EASY);
 		RectangularFieldView fieldView = (RectangularFieldView) findViewById(R.id.fieldView);
-		fieldView.setStretchMode(GridView.NO_STRETCH);
-		fieldView.setNumColumns(5);
-		fieldView.setAdapter(adapter);
+		fieldView.setOnItemClickListener(this);
+		
+		switchClickModeButton = (ImageButton) findViewById(R.id.switchClickMode);
+		setOpenCellMode();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		clickModeState.clickOn(game.getField(), position);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.switchClickMode:
+			clickModeState.switchClickMode(this);
+			break;
+		}
+	}
+	
+	public void setOpenCellMode() {
+		clickModeState = openCellClickModeState;
+		switchClickModeButton.setImageResource(R.drawable.flag);
+	}
+	
+	public void setToggleMarkMode() {
+		clickModeState = setFlagClickModeState;
+		switchClickModeButton.setImageResource(R.drawable.mine);
 	}
 }

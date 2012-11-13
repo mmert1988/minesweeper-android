@@ -6,7 +6,7 @@
     <de.moonstarlabs.android.minesweeper.widget.CellView
         android:id="@+id/cellView"
         android:background="@drawable/cell_background"
-        android:layout_width="48dp"
-        android:layout_height="48dp" />
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
 
 </FrameLayout>
