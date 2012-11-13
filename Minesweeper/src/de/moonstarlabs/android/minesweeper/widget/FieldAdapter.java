@@ -1,5 +1,8 @@
 package de.moonstarlabs.android.minesweeper.widget;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
@@ -13,7 +16,8 @@ import de.moonstarlabs.android.minesweeper.model.Field;
 
 public class FieldAdapter implements ListAdapter {
 	private Context mContext;
-	private Field mField;
+	private final Field mField;
+	private Set<DataSetObserver> dataSetObserver = new HashSet<DataSetObserver>();
 
 	public FieldAdapter(Context context, Field field) {
 		mContext = context;
@@ -86,14 +90,12 @@ public class FieldAdapter implements ListAdapter {
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-		// TODO Auto-generated method stub
-
+		dataSetObserver.add(observer);
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-		// TODO Auto-generated method stub
-
+		dataSetObserver.remove(observer);
 	}
 
 	@Override
@@ -104,6 +106,10 @@ public class FieldAdapter implements ListAdapter {
 	@Override
 	public boolean isEnabled(int position) {
 		return true;
+	}
+	
+	public Field getField() {
+		return mField;
 	}
 
 }
