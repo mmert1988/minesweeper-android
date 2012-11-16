@@ -1,8 +1,6 @@
 package de.moonstarlabs.android.minesweeper.model;
 
-import java.util.Observable;
-
-public class Cell extends Observable {
+public class Cell {
 	
 	private boolean isMined;
 	private boolean isMarked = false;
@@ -14,17 +12,14 @@ public class Cell extends Observable {
 	
 	void open() {
 		isOpen = true;
-		notifyObservers();
 	}
 	
 	void mark() {
 		isMarked = true;
-		notifyObservers();
 	}
 	
 	void unmark() {
 		isMarked = false;
-		notifyObservers();
 	}
 	
 	public boolean isMined() {

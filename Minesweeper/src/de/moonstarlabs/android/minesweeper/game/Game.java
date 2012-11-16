@@ -3,9 +3,9 @@ package de.moonstarlabs.android.minesweeper.game;
 import java.util.HashSet;
 import java.util.Set;
 
-import android.app.Activity;
 import android.util.Pair;
 import android.widget.GridView;
+import de.moonstarlabs.android.minesweeper.MainActivity;
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Field;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
@@ -13,11 +13,11 @@ import de.moonstarlabs.android.minesweeper.widget.FieldAdapter;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 
 public class Game {
-	private final Activity context;
+	private final MainActivity activity;
 	private Field field;
 	
-	public Game(Activity context, DifficultyLevel level) {
-		this.context = context;
+	public Game(MainActivity context, DifficultyLevel level) {
+		this.activity = context;
 		initGame(level);
 	}
 	
@@ -37,8 +37,10 @@ public class Game {
 		field.openCell(0);
 		field.openCell(1);
 		
-		FieldAdapter adapter = new FieldAdapter(context, field);
-		RectangularFieldView fieldView = (RectangularFieldView) context.findViewById(R.id.fieldView);
+		FieldAdapter adapter = new FieldAdapter(activity, field);
+		adapter.setOnItemClickListener(activity);
+		adapter.setOnItemLongClickListener(activity);
+		RectangularFieldView fieldView = (RectangularFieldView) activity.findViewById(R.id.fieldView);
 		fieldView.setStretchMode(GridView.NO_STRETCH);
 		fieldView.setNumColumns(5);
 		fieldView.setAdapter(adapter);

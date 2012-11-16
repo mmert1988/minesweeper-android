@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,15 +13,33 @@ import android.widget.ImageView;
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
+import android.database.*;
 
 public class FieldAdapter extends BaseAdapter implements Observer {
+	public static interface OnItemClickListener {
+		public void onItemClick(View item, int position);
+	}
+	
+	public static interface OnItemLongClickListener {
+		public void onItemLongClick(View item, int position);
+	}
+	
 	private Context mContext;
 	private final Field mField;
+	private OnItemClickListener itemClickListener;
+	private OnItemLongClickListener itemLongClickListener;
+	private Handler changeHandler = new Handler();
 
 	public FieldAdapter(Context context, Field field) {
 		mContext = context;
 		mField = field;
-		((Observable) mField).addObserver(this);
+		((ContentObservable) mField).registerObserver(new ContentObserver(changeHandler) {
+			@Override
+			public void onChange(boolean selfChange) {
+				super.onChange(selfChange);
+				notifyDataSetChanged();
+			}
+		});
 	}
 
 	@Override
@@ -44,7 +63,7 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		Cell cell = mField.getCell(position);
 		View view =  convertView;
 		
@@ -54,6 +73,22 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 		}
 		
 		ImageView button = (ImageView) view.findViewById(R.id.cellView);
+		button.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if (itemClickListener != null) {
+					itemClickListener.onItemClick(v, position);
+				}
+			}
+		});
+		button.setOnLongClickListener(new View.OnLongClickListener() {
+			public boolean onLongClick(View v) {
+				if (itemLongClickListener != null) {
+					itemLongClickListener.onItemLongClick(v, position);
+					return true;
+				}
+				return false;
+			}
+		});
 		
 		if (cell.isMarked()) {
 			button.setImageResource(R.drawable.flag);
@@ -104,6 +139,14 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 	@Override
 	public void update(Observable observable, Object data) {
 		notifyDataSetChanged();
+	}
+	
+	public void setOnItemClickListener(OnItemClickListener listener) {
+		this.itemClickListener = listener;
+	}
+	
+	public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+		this.itemLongClickListener = listener;
 	}
 
 }

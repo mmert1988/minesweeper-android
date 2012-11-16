@@ -1,13 +1,12 @@
 package de.moonstarlabs.android.minesweeper.model;
 
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
+import android.database.ContentObservable;
 import android.util.Pair;
 
-public class RectangularField extends Observable implements Field, Observer {
+public class RectangularField extends ContentObservable implements Field {
 
 	public static Field random(int rows, int columns, int randomMines) {
 		Set<Pair<Integer, Integer>> randomMineCoords = generateRandomMineCoords(rows, columns, randomMines);
@@ -65,38 +64,48 @@ public class RectangularField extends Observable implements Field, Observer {
 		return computeMinedNeighbours(row, column);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void openCell(int position) {
-		getCell(position).open();
+		Cell cell = getCell(position);
+		if (cell.isMarked()) {
+			return;
+		}
+		
+		cell.open();
+		notifyChange(false);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void toggleMarkCell(int position) {
 		Cell cell = getCell(position);
+		
+		if (cell.isOpen()) {
+			return;
+		}
+		
 		if (cell.isMarked()) {
 			cell.unmark();
 		} else {
 			cell.mark();
 		}
+		notifyChange(false);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void openAllMinedCells() {
 		for (Pair<Integer, Integer> coord: mineCoords) {
 			cells[coord.first][coord.second].open();
 		}
-	}
-
-	@Override
-	public void update(Observable observable, Object data) {
-		notifyObservers();
+		notifyChange(false);
 	}
 	
 	private void initField() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
 				cells[i][j] = new Cell(mineCoords.contains(new Pair<Integer, Integer>(i, j)));
-				cells[i][j].addObserver(this);
 			}
 		}
 	}

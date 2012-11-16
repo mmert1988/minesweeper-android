@@ -5,17 +5,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import de.moonstarlabs.android.minesweeper.game.ClickModeState;
 import de.moonstarlabs.android.minesweeper.game.Game;
+import de.moonstarlabs.android.minesweeper.game.Game.DifficultyLevel;
 import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
 import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
-import de.moonstarlabs.android.minesweeper.game.Game.DifficultyLevel;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
+import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemClickListener;
+import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemLongClickListener;
 
-public class MainActivity extends Activity implements OnClickListener, OnItemClickListener {
+public class MainActivity extends Activity implements OnClickListener, OnItemClickListener, OnItemLongClickListener {
 	private static final ClickModeState openCellClickModeState = new OpenCellModeState();
 	private static final ClickModeState setFlagClickModeState = new ToggleMarkModeState();
 	
@@ -29,8 +28,6 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		setContentView(R.layout.activity_main);
 
 		game = new Game(this, DifficultyLevel.EASY);
-		RectangularFieldView fieldView = (RectangularFieldView) findViewById(R.id.fieldView);
-		fieldView.setOnItemClickListener(this);
 		
 		switchClickModeButton = (ImageButton) findViewById(R.id.switchClickMode);
 		setOpenCellMode();
@@ -40,11 +37,6 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		clickModeState.clickOn(game.getField(), position);
 	}
 
 	@Override
@@ -65,4 +57,15 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		clickModeState = setFlagClickModeState;
 		switchClickModeButton.setImageResource(R.drawable.flag);
 	}
+
+	@Override
+	public void onItemLongClick(View item, int position) {
+		clickModeState.longClickOn(game.getField(), position);
+	}
+
+	@Override
+	public void onItemClick(View item, int position) {
+		clickModeState.clickOn(game.getField(), position);
+	}
+
 }
