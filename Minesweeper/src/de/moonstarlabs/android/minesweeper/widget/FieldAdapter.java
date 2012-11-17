@@ -44,7 +44,7 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 
 	@Override
 	public int getCount() {
-		return mField.getCountCells();
+		return mField.getCellsCount();
 	}
 
 	@Override

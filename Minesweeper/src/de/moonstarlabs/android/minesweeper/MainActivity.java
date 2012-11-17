@@ -60,12 +60,12 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 
 	@Override
 	public void onItemLongClick(View item, int position) {
-		clickModeState.longClickOn(game.getField(), position);
+		clickModeState.longClickOn(game, position);
 	}
 
 	@Override
 	public void onItemClick(View item, int position) {
-		clickModeState.clickOn(game.getField(), position);
+		clickModeState.clickOn(game, position);
 	}
 
 }

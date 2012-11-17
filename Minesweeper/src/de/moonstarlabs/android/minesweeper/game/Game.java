@@ -15,14 +15,65 @@ import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 public class Game {
 	private final MainActivity activity;
 	private Field field;
+	private Status status = Status.RUNNING;
+	private final long startMillis;
+	
+	private Set<GameListener> listeners = new HashSet<GameListener>();
 	
 	public Game(MainActivity context, DifficultyLevel level) {
 		this.activity = context;
 		initGame(level);
+		startMillis = System.currentTimeMillis();
 	}
 	
-	public Field getField() {
-		return field;
+	public Status getStatus() {
+		return status;
+	}
+	
+	public long getStartMillis() {
+		return startMillis;
+	}
+	
+	public void openCell(int position) {
+		if (status != Status.RUNNING) {
+			return;
+		}
+		
+		if (field.getCell(position).isMined()) {
+			field.openAllMinedCells();
+			status = Status.LOST;
+			
+			for (GameListener listener: listeners) {
+				listener.onGameStatusChanged(status);
+			}
+			return;
+		}
+		
+		field.openCell(position);
+		
+		if (isGameWon()) {
+			status = Status.WON;
+			
+			for (GameListener listener: listeners) {
+				listener.onGameStatusChanged(status);
+			}
+		}
+	}
+	
+	public void toggleMarkCell(int position) {
+		if (status != Status.RUNNING) {
+			return;
+		}
+		
+		if (!field.getCell(position).isMarked()) {
+			field.markCell(position);
+		} else {
+			field.unmarkCell(position);
+		}
+		
+		for (GameListener listener: listeners) {
+			listener.onMinesLeftChanged(field.getMinedCellsCount() - field.getMarkedCellsCount());
+		}
 	}
 	
 	private void initGame(DifficultyLevel level) {
@@ -34,8 +85,6 @@ public class Game {
 		mineCoords.add(new Pair<Integer, Integer>(3, 3));
 		mineCoords.add(new Pair<Integer, Integer>(4, 4));
 		field = new RectangularField(5, 5, mineCoords);
-		field.openCell(0);
-		field.openCell(1);
 		
 		FieldAdapter adapter = new FieldAdapter(activity, field);
 		adapter.setOnItemClickListener(activity);
@@ -46,10 +95,21 @@ public class Game {
 		fieldView.setAdapter(adapter);
 	}
 	
+	private boolean isGameWon() {
+		return field.getOpenedCellsCount() + field.getMarkedCellsCount() == field.getCellsCount() &&
+				field.getMarkedCellsCount() == field.getMinedCellsCount();
+	}
+	
 	public static enum DifficultyLevel {
 		EASY,
 		MEDIUM,
 		HARD
+	}
+	
+	public static enum Status {
+		RUNNING,
+		WON,
+		LOST
 	}
 	
 }

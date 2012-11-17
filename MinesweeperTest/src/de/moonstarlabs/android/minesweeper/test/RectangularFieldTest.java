@@ -19,7 +19,7 @@ public class RectangularFieldTest extends TestCase {
 	}
 
 	public void testGetCountCells() {
-		assertEquals(9, field.getCountCells());
+		assertEquals(9, field.getCellsCount());
 	}
 	
 	public void testGetCell() {

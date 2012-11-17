@@ -1,7 +1,6 @@
 package de.moonstarlabs.android.minesweeper.game;
 
 import de.moonstarlabs.android.minesweeper.MainActivity;
-import de.moonstarlabs.android.minesweeper.model.Field;
 
 public class ToggleMarkModeState implements ClickModeState {
 
@@ -11,12 +10,12 @@ public class ToggleMarkModeState implements ClickModeState {
 	}
 
 	@Override
-	public void clickOn(Field field, int position) {
-		field.toggleMarkCell(position);
+	public void clickOn(Game game, int position) {
+		game.toggleMarkCell(position);
 	}
 
 	@Override
-	public void longClickOn(Field field, int position) {
+	public void longClickOn(Game game, int position) {
 		// TODO Auto-generated method stub
 
 	}

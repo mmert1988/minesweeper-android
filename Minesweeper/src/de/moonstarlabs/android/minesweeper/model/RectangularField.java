@@ -32,6 +32,8 @@ public class RectangularField extends ContentObservable implements Field {
 	public final int columns;
 	private final Cell[][] cells;
 	private final Set<Pair<Integer, Integer>> mineCoords;
+	private int openedCells = 0;
+	private int markedCells = 0;
 	
 	public RectangularField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
 		if (rows * columns < mineCoords.size()) {
@@ -53,8 +55,23 @@ public class RectangularField extends ContentObservable implements Field {
 	}
 
 	@Override
-	public int getCountCells() {
+	public int getCellsCount() {
 		return rows * columns;
+	}
+	
+	@Override
+	public int getMinedCellsCount() {
+		return mineCoords.size();
+	}
+	
+	@Override
+	public int getOpenedCellsCount() {
+		return openedCells;
+	}
+	
+	@Override
+	public int getMarkedCellsCount() {
+		return markedCells;
 	}
 
 	@Override
@@ -73,23 +90,35 @@ public class RectangularField extends ContentObservable implements Field {
 		}
 		
 		cell.open();
+		openedCells++;
 		notifyChange(false);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void toggleMarkCell(int position) {
+	public void markCell(int position) {
 		Cell cell = getCell(position);
 		
 		if (cell.isOpen()) {
 			return;
 		}
 		
-		if (cell.isMarked()) {
-			cell.unmark();
-		} else {
-			cell.mark();
+		markedCells++;
+		cell.mark();
+		notifyChange(false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public void unmarkCell(int position) {
+		Cell cell = getCell(position);
+		
+		if (cell.isOpen()) {
+			return;
 		}
+		
+		markedCells--;
+		cell.unmark();
 		notifyChange(false);
 	}
 	
