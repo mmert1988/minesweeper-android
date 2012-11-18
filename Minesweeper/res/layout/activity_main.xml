@@ -3,10 +3,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp" >
+
+        <TextView
+            android:id="@+id/minesLeftView"
+            style="@style/DefaultTextStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="left|center_vertical" />
+
+        <FrameLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" >
+
+            <ImageButton
+                android:id="@+id/newGameButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/cell_background"
+                android:contentDescription="@string/content_description_new_game_button"
+                android:onClick="onClick"
+                android:src="@drawable/new_game" />
+        </FrameLayout>
+
+        <Chronometer
+            android:id="@+id/secondsPastView"
+            style="@style/DefaultTextStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="right|center_vertical" />
+    </LinearLayout>
+
+    <de.moonstarlabs.android.minesweeper.widget.RectangularFieldView
+        android:id="@+id/fieldView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:columnWidth="50dp"
+        android:gravity="center" />
+
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|center_horizontal"
+        android:padding="20dp" >
 
         <ImageButton
             android:id="@+id/switchClickMode"
@@ -17,12 +66,5 @@
             android:contentDescription="@string/content_description_switch_click_mode_button"
             android:onClick="onClick" />
     </FrameLayout>
-
-    <de.moonstarlabs.android.minesweeper.widget.RectangularFieldView
-        android:id="@+id/fieldView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:columnWidth="50dp" />
 
 </TableLayout>

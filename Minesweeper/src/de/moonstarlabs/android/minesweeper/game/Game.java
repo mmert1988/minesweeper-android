@@ -3,6 +3,7 @@ package de.moonstarlabs.android.minesweeper.game;
 import java.util.HashSet;
 import java.util.Set;
 
+import android.os.SystemClock;
 import android.util.Pair;
 import android.widget.GridView;
 import de.moonstarlabs.android.minesweeper.MainActivity;
@@ -23,11 +24,15 @@ public class Game {
 	public Game(MainActivity context, DifficultyLevel level) {
 		this.activity = context;
 		initGame(level);
-		startMillis = System.currentTimeMillis();
+		startMillis = SystemClock.elapsedRealtime();
 	}
 	
 	public Status getStatus() {
 		return status;
+	}
+	
+	public int getMinesLeft() {
+		return computeMinesLeft();
 	}
 	
 	public long getStartMillis() {
@@ -72,8 +77,16 @@ public class Game {
 		}
 		
 		for (GameListener listener: listeners) {
-			listener.onMinesLeftChanged(field.getMinedCellsCount() - field.getMarkedCellsCount());
+			listener.onMinesLeftChanged(computeMinesLeft());
 		}
+	}
+	
+	public void addListener(GameListener listener) {
+		listeners.add(listener);
+	}
+	
+	public void removeListener(GameListener listener) {
+		listeners.remove(listener);
 	}
 	
 	private void initGame(DifficultyLevel level) {
@@ -98,6 +111,10 @@ public class Game {
 	private boolean isGameWon() {
 		return field.getOpenedCellsCount() + field.getMarkedCellsCount() == field.getCellsCount() &&
 				field.getMarkedCellsCount() == field.getMinedCellsCount();
+	}
+	
+	private int computeMinesLeft() {
+		return field.getMinedCellsCount() - field.getMarkedCellsCount();
 	}
 	
 	public static enum DifficultyLevel {
