@@ -79,6 +79,14 @@ public class Game {
 		for (GameListener listener: listeners) {
 			listener.onMinesLeftChanged(computeMinesLeft());
 		}
+		
+		if (isGameWon()) {
+			status = Status.WON;
+			
+			for (GameListener listener: listeners) {
+				listener.onGameStatusChanged(status);
+			}
+		}
 	}
 	
 	public void addListener(GameListener listener) {
