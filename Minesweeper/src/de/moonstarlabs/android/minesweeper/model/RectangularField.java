@@ -109,6 +109,20 @@ public class RectangularField extends ContentObservable implements Field {
 	
 	@SuppressWarnings("deprecation")
 	@Override
+	public void suspect(int position) {
+		getCell(position).suspect();
+		notifyChange(false);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void unsuspect(int position) {
+		getCell(position).unSuspect();
+		notifyChange(false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
 	public void openAllMinedCells() {
 		for (Pair<Integer, Integer> coord: mineCoords) {
 			cells[coord.first][coord.second].open();
@@ -202,18 +216,4 @@ public class RectangularField extends ContentObservable implements Field {
 		markedCells = in.readInt();
 	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	public void suspect(int position) {
-		getCell(position).suspect();
-		notifyChange(false);
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void unSuspect(int position) {
-		getCell(position).unSuspect();
-		notifyChange(false);
-	}
-	
 }

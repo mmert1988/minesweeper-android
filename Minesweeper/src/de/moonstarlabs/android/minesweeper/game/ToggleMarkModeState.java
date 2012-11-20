@@ -16,8 +16,7 @@ public class ToggleMarkModeState implements ClickModeState {
 
 	@Override
 	public void longClickOn(Game game, int position) {
-		// TODO Auto-generated method stub
-
+		game.toggleSuspectCell(position);
 	}
 
 }

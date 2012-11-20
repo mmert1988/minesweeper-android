@@ -102,6 +102,8 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 					// TODO
 				}
 			}
+		} else if (cell.isSuspect()) {
+			button.setImageResource(R.drawable.suspect);
 		}
 
 		return view;

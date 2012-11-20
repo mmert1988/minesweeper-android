@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
 import android.util.Pair;
+import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
 
@@ -92,6 +93,23 @@ public class Game implements Parcelable {
 			for (GameListener listener : listeners) {
 				listener.onGameStatusChanged(status);
 			}
+		}
+	}
+	
+	public void toggleSuspectCell(int position) {
+		if (status == Status.NEW) {
+			start();
+		}
+		
+		Cell cell = field.getCell(position);
+		if (status != Status.RUNNING || cell.isOpen() || cell.isMarked()) {
+			return;
+		}
+		
+		if (cell.isSuspect()) {
+			field.unsuspect(position);
+		} else {
+			field.suspect(position);
 		}
 	}
 

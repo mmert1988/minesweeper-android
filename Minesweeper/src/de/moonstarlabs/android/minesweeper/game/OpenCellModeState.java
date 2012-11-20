@@ -16,7 +16,7 @@ public class OpenCellModeState implements ClickModeState {
 
 	@Override
 	public void longClickOn(Game game, int position) {
-		game.toggleMarkCell(position);
+		game.toggleSuspectCell(position);
 	}
 
 }
