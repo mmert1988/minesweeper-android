@@ -201,5 +201,19 @@ public class RectangularField extends ContentObservable implements Field {
 		openedCells = in.readInt();
 		markedCells = in.readInt();
 	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void suspect(int position) {
+		getCell(position).suspect();
+		notifyChange(false);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public void unSuspect(int position) {
+		getCell(position).unSuspect();
+		notifyChange(false);
+	}
 	
 }

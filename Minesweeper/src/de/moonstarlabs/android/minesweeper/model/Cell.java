@@ -8,6 +8,7 @@ public class Cell implements Parcelable {
 	private final boolean isMined;
 	private boolean isMarked = false;
 	private boolean isOpen = false;
+	private boolean isSuspect = false;
 	
 	Cell(boolean isMined) {
 		this.isMined = isMined;
@@ -25,6 +26,14 @@ public class Cell implements Parcelable {
 		isMarked = false;
 	}
 	
+	void suspect(){
+		isSuspect = true;
+	}
+	
+	void unSuspect(){
+		isSuspect = false;
+	}
+	
 	public boolean isMined() {
 		return isMined;
 	}
@@ -35,6 +44,10 @@ public class Cell implements Parcelable {
 	
 	public boolean isOpen() {
 		return isOpen;
+	}
+	
+	public boolean isSuspect(){
+		return isSuspect;
 	}
 
 	@Override
@@ -47,6 +60,7 @@ public class Cell implements Parcelable {
 		out.writeString(String.valueOf(isMined));
 		out.writeString(String.valueOf(isMarked));
 		out.writeString(String.valueOf(isOpen));
+		out.writeString(String.valueOf(isSuspect));
 	}
 	
 	public static final Parcelable.Creator<Cell> CREATOR = new Creator<Cell>() {
@@ -66,6 +80,7 @@ public class Cell implements Parcelable {
 		this.isMined = Boolean.valueOf(in.readString());
 		this.isMarked = Boolean.valueOf(in.readString());
 		this.isOpen = Boolean.valueOf(in.readString());
+		this.isSuspect = Boolean.valueOf(in.readString());
 	}
 
 }

@@ -23,5 +23,9 @@ public interface Field extends Parcelable {
 	public abstract void unmarkCell(int position);
 	
 	public abstract void openAllMinedCells();
+	
+	public abstract void suspect(int position);
+	
+	public abstract void unSuspect(int position);
 
 }
