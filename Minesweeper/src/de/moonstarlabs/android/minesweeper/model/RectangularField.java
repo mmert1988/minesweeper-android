@@ -86,9 +86,32 @@ public class RectangularField extends ContentObservable implements Field {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void openCell(int position) {
-		getCell(position).open();
-		openedCells++;
+		openCellHelper(position);
 		notifyChange(false);
+	}
+	
+	private void openCellHelper(int position) {
+		int row = position / rows;
+		int column = position % columns;
+		Cell cell = cells[row][column];
+		cell.open();
+		openedCells++;
+		if (!cell.isMined() && calculateMinedNeighbours(position) == 0) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					try {
+						int neighbourRow = row + i - 1;
+						int neighbourColumn = column + j - 1;
+						int neighbourPos = convertToPosition(neighbourRow, neighbourColumn);
+						if (position != neighbourPos && !cells[neighbourRow][neighbourColumn].isOpen()) {
+							openCellHelper(neighbourPos);
+						}
+					} catch (ArrayIndexOutOfBoundsException e) {
+						// Nothing
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -214,6 +237,10 @@ public class RectangularField extends ContentObservable implements Field {
 		
 		openedCells = in.readInt();
 		markedCells = in.readInt();
+	}
+	
+	private int convertToPosition(int row, int column) {
+		return row * columns + column;
 	}
 
 }
