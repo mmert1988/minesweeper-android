@@ -165,7 +165,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 			break;
 			
 		case WON:
-			newGameButton.setImageResource(R.drawable.game_over);
+			newGameButton.setImageResource(R.drawable.game_won);
 			secondsPastView.stop();
 			break;
 		}
