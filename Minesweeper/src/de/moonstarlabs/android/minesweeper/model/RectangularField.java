@@ -18,8 +18,10 @@ public class RectangularField extends ContentObservable implements Field {
 	private static Set<Pair<Integer, Integer>> generateRandomMineCoords(int rows, int columns, int randomMines) {
 		Set<Pair<Integer, Integer>> result = new HashSet<Pair<Integer, Integer>>();
 		int generatedCoords = 0;
-		while (result.add(generateRandomCoord(rows, columns)) || generatedCoords < randomMines) {
-			generatedCoords++;
+		while (generatedCoords < randomMines) {
+			if (result.add(generateRandomCoord(rows, columns))) {
+				generatedCoords++;
+			}
 		}
 		return result;
 	}
