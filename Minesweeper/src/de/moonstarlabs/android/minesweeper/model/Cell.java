@@ -1,8 +1,11 @@
 package de.moonstarlabs.android.minesweeper.model;
 
-public class Cell {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Cell implements Parcelable {
 	
-	private boolean isMined;
+	private final boolean isMined;
 	private boolean isMarked = false;
 	private boolean isOpen = false;
 	
@@ -32,6 +35,37 @@ public class Cell {
 	
 	public boolean isOpen() {
 		return isOpen;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeString(String.valueOf(isMined));
+		out.writeString(String.valueOf(isMarked));
+		out.writeString(String.valueOf(isOpen));
+	}
+	
+	public static final Parcelable.Creator<Cell> CREATOR = new Creator<Cell>() {
+		
+		@Override
+		public Cell[] newArray(int size) {
+			return new Cell[size];
+		}
+		
+		@Override
+		public Cell createFromParcel(Parcel in) {
+			return new Cell(in);
+		}
+	};
+	
+	private Cell(Parcel in) {
+		this.isMined = Boolean.valueOf(in.readString());
+		this.isMarked = Boolean.valueOf(in.readString());
+		this.isOpen = Boolean.valueOf(in.readString());
 	}
 
 }

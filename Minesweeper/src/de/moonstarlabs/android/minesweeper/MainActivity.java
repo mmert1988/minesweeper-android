@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Chronometer;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import de.moonstarlabs.android.minesweeper.game.ClickModeState;
@@ -15,6 +16,8 @@ import de.moonstarlabs.android.minesweeper.game.Game.Status;
 import de.moonstarlabs.android.minesweeper.game.GameListener;
 import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
 import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
+import de.moonstarlabs.android.minesweeper.widget.FieldAdapter;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemClickListener;
 import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemLongClickListener;
 
@@ -41,7 +44,18 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		secondsPastView = (Chronometer) findViewById(R.id.secondsPastView);
 		
 		initNewGame();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
 		setOpenCellMode();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		secondsPastView.stop();
 	}
 
 	@Override
@@ -104,11 +118,19 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	
 	private void initNewGame() {
 		newGameButton.setImageResource(R.drawable.new_game);
-		game = new Game(this, DifficultyLevel.EASY);
+		game = new Game(DifficultyLevel.EASY);
 		game.addListener(this);
 		minesLeftView.setText(String.valueOf(game.getMinesLeft()));
 		secondsPastView.setBase(game.getStartMillis());
 		secondsPastView.start();
+		
+		FieldAdapter adapter = new FieldAdapter(this, game.getField());
+		adapter.setOnItemClickListener(this);
+		adapter.setOnItemLongClickListener(this);
+		RectangularFieldView fieldView = (RectangularFieldView) findViewById(R.id.fieldView);
+		fieldView.setStretchMode(GridView.NO_STRETCH);
+		fieldView.setNumColumns(5);
+		fieldView.setAdapter(adapter);
 	}
 
 }
