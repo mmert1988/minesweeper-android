@@ -87,7 +87,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	public void onGameStatusChanged(Status status) {
 		switch (status) {
 		case WON:
-			// TODO
+			newGameButton.setImageResource(R.drawable.game_won);
 			secondsPastView.stop();
 			break;
 		case LOST:
