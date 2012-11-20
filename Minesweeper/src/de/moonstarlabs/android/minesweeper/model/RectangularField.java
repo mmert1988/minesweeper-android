@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.database.ContentObservable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Pair;
 
 public class RectangularField extends ContentObservable implements Field {
@@ -84,12 +86,7 @@ public class RectangularField extends ContentObservable implements Field {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void openCell(int position) {
-		Cell cell = getCell(position);
-		if (cell.isMarked()) {
-			return;
-		}
-		
-		cell.open();
+		getCell(position).open();
 		openedCells++;
 		notifyChange(false);
 	}
@@ -97,28 +94,16 @@ public class RectangularField extends ContentObservable implements Field {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void markCell(int position) {
-		Cell cell = getCell(position);
-		
-		if (cell.isOpen()) {
-			return;
-		}
-		
+		getCell(position).mark();
 		markedCells++;
-		cell.mark();
 		notifyChange(false);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void unmarkCell(int position) {
-		Cell cell = getCell(position);
-		
-		if (cell.isOpen()) {
-			return;
-		}
-		
+		getCell(position).unmark();
 		markedCells--;
-		cell.unmark();
 		notifyChange(false);
 	}
 	
@@ -155,6 +140,66 @@ public class RectangularField extends ContentObservable implements Field {
 			}
 		}
 		return minedNeighbours;
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeInt(rows);
+		out.writeInt(columns);
+		
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				out.writeParcelable(cells[i][j], flags);
+			}
+		}
+		
+		out.writeInt(mineCoords.size());
+		for (Pair<Integer, Integer> mineCoord: mineCoords) {
+			out.writeInt(mineCoord.first);
+			out.writeInt(mineCoord.second);
+		}
+		
+		out.writeInt(openedCells);
+		out.writeInt(markedCells);
+	}
+	
+	public static final Parcelable.Creator<RectangularField> CREATOR = new Creator<RectangularField>() {
+		@Override
+		public RectangularField[] newArray(int size) {
+			return new RectangularField[size];
+		}
+		
+		@Override
+		public RectangularField createFromParcel(Parcel in) {
+			return new RectangularField(in);
+		}
+	};
+	
+	private RectangularField(Parcel in) {
+		rows = in.readInt();
+		columns = in.readInt();
+		
+		cells = new Cell[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				cells[i][j] = in.readParcelable(Cell.class.getClassLoader());
+			}
+		}
+		
+		mineCoords = new HashSet<Pair<Integer, Integer>>();
+		int mineCoordsSize = in.readInt();
+		for (int i = 0; i < mineCoordsSize; i++) {
+			Pair<Integer, Integer> mineCoord = new Pair<Integer, Integer>(in.readInt(), in.readInt());
+			mineCoords.add(mineCoord);
+		}
+		
+		openedCells = in.readInt();
+		markedCells = in.readInt();
 	}
 	
 }

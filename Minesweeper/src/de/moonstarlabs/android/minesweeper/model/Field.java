@@ -1,6 +1,8 @@
 package de.moonstarlabs.android.minesweeper.model;
 
-public interface Field {
+import android.os.Parcelable;
+
+public interface Field extends Parcelable {
 
 	public abstract Cell getCell(int position);
 
