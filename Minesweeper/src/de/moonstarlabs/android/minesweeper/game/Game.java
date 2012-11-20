@@ -12,14 +12,13 @@ import de.moonstarlabs.android.minesweeper.model.RectangularField;
 
 public class Game implements Parcelable {
 	private Field field;
-	private Status status = Status.RUNNING;
-	private final long startMillis;
+	private Status status = Status.NEW;
+	private long startMillis;
 
 	private Set<GameListener> listeners = new HashSet<GameListener>();
 
 	public Game(DifficultyLevel level) {
 		initGame(level);
-		startMillis = SystemClock.elapsedRealtime();
 	}
 
 	public Status getStatus() {
@@ -39,6 +38,10 @@ public class Game implements Parcelable {
 	}
 
 	public void openCell(int position) {
+		if (status == Status.NEW) {
+			start();
+		}
+
 		if (status != Status.RUNNING || field.getCell(position).isMarked()) {
 			return;
 		}
@@ -65,6 +68,10 @@ public class Game implements Parcelable {
 	}
 
 	public void toggleMarkCell(int position) {
+		if (status == Status.NEW) {
+			start();
+		}
+
 		if (status != Status.RUNNING || field.getCell(position).isOpen()) {
 			return;
 		}
@@ -116,12 +123,20 @@ public class Game implements Parcelable {
 		return field.getMinedCellsCount() - field.getMarkedCellsCount();
 	}
 
+	private void start() {
+		startMillis = SystemClock.elapsedRealtime();
+		status = Status.RUNNING;
+		for (GameListener listener : listeners) {
+			listener.onGameStatusChanged(status);
+		}
+	}
+
 	public static enum DifficultyLevel {
 		EASY, MEDIUM, HARD
 	}
 
 	public static enum Status {
-		RUNNING, WON, LOST
+		NEW, RUNNING, WON, LOST
 	}
 
 	@Override
@@ -135,19 +150,19 @@ public class Game implements Parcelable {
 		out.writeString(status.toString());
 		out.writeLong(startMillis);
 	}
-	
+
 	public static final Parcelable.Creator<Game> CREATOR = new Creator<Game>() {
 		@Override
 		public Game[] newArray(int size) {
 			return new Game[size];
 		}
-		
+
 		@Override
 		public Game createFromParcel(Parcel in) {
 			return new Game(in);
 		}
 	};
-	
+
 	private Game(Parcel in) {
 		field = in.readParcelable(Field.class.getClassLoader());
 		status = Status.valueOf(in.readString());
