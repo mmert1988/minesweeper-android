@@ -121,7 +121,7 @@ public class Game implements Parcelable {
 	}
 
 	private void initGame(DifficultyLevel level) {
-		field = RectangularField.random(5, 6, 7);
+		field = RectangularField.random(6, 6, 10);
 	}
 
 	private boolean isGameWon() {
