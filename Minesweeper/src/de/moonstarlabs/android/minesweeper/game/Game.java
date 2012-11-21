@@ -6,7 +6,6 @@ import java.util.Set;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.util.Pair;
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
@@ -122,14 +121,7 @@ public class Game implements Parcelable {
 	}
 
 	private void initGame(DifficultyLevel level) {
-		// TODO Auto-generated method stub
-		Set<Pair<Integer, Integer>> mineCoords = new HashSet<Pair<Integer, Integer>>();
-		mineCoords.add(new Pair<Integer, Integer>(0, 0));
-		mineCoords.add(new Pair<Integer, Integer>(1, 1));
-		mineCoords.add(new Pair<Integer, Integer>(2, 2));
-		mineCoords.add(new Pair<Integer, Integer>(3, 3));
-		mineCoords.add(new Pair<Integer, Integer>(4, 4));
-		field = new RectangularField(5, 5, mineCoords);
+		field = RectangularField.random(7, 7, 7);
 	}
 
 	private boolean isGameWon() {
