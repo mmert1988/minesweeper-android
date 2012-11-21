@@ -50,7 +50,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		
 		fieldView = (RectangularFieldView) findViewById(R.id.fieldView);
 		fieldView.setStretchMode(GridView.NO_STRETCH);
-		fieldView.setNumColumns(7);
+		fieldView.setNumColumns(6);
 
 		if (savedInstanceState != null) {
 			game = savedInstanceState.getParcelable(EXTRA_GAME);
