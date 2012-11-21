@@ -98,8 +98,8 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 				button.setImageResource(R.drawable.mine);
 			} else {
 				int minesInNeighbours = mField.calculateMinedNeighbours(position);
-				if (minesInNeighbours > 0) {
-					// TODO
+				if(minesInNeighbours > 0){
+					setNumber(minesInNeighbours, button);
 				}
 			}
 		} else if (cell.isSuspect()) {
@@ -107,6 +107,35 @@ public class FieldAdapter extends BaseAdapter implements Observer {
 		}
 
 		return view;
+	}
+	
+	private void setNumber(int minesInNeighbours, ImageView button){
+		switch(minesInNeighbours){
+		case 1:
+			button.setImageResource(R.drawable.one);
+			break;
+		case 2:
+			button.setImageResource(R.drawable.two);
+			break;
+		case 3:
+			button.setImageResource(R.drawable.three);
+			break;
+		case 4: 
+			button.setImageResource(R.drawable.four);
+			break;
+		case 5: 
+			button.setImageResource(R.drawable.five);
+			break;
+		case 6:
+			button.setImageResource(R.drawable.six);
+			break;
+		case 7:
+			button.setImageResource(R.drawable.seven);
+			break;
+		case 8:
+			button.setImageResource(R.drawable.eigth);
+			break;
+		}
 	}
 
 	@Override
