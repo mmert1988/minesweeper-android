@@ -28,6 +28,6 @@ public interface Field extends Parcelable {
 	
 	public abstract void openAllMinedCells();
 	
-	public abstract void openUnmarkedNeighbours(int position);
+	public abstract boolean openUnmarkedNeighbours(int position);
 	
 }

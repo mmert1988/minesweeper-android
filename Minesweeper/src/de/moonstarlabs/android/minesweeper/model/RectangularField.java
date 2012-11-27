@@ -156,9 +156,47 @@ public class RectangularField extends ContentObservable implements Field {
 	}
 	
 	@Override
-	public void openUnmarkedNeighbours(int position) {
-		// TODO Auto-generated method stub
+	public boolean openUnmarkedNeighbours(int position) {
+		int row = position / rows;
+		int column = position % columns;
 		
+		int countMinedNeihbours = computeMinedNeighbours(row, column);
+		int countMarkedNeighbours = 0;
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				try {
+					if (cells[row + i - 1][column + j - 1].isMarked()) {
+						countMarkedNeighbours++;
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// Just ignore
+				}
+			}
+		}
+		
+		if (countMarkedNeighbours < countMinedNeihbours) {
+			return true;
+		}
+		
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				try {
+					Cell neighbour = cells[row + i - 1][column + j - 1];
+					int neighbourPos = convertToPosition(row + i - 1, column + j - 1);
+					if (!neighbour.isMarked() && position != neighbourPos) {
+						if (neighbour.isMined()) {
+							return false;
+						} else {
+							openCellHelper(neighbourPos);
+						}
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// Just ignore
+				}
+			}
+		}
+		
+		return true;
 	}
 	
 	private void initField() {
