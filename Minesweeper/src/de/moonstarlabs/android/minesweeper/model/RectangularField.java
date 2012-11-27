@@ -155,6 +155,12 @@ public class RectangularField extends ContentObservable implements Field {
 		notifyChange(false);
 	}
 	
+	@Override
+	public void openUnmarkedNeighbours(int position) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private void initField() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
