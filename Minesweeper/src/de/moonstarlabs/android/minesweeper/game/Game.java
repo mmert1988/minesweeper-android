@@ -57,6 +57,13 @@ public class Game implements Parcelable {
 			return;
 		}
 
+		if(field.getCell(position).isOpen() && field.calculateMinedNeighbours(position) > 0){
+			if(!field.openUnmarkedNeighbours(position)){
+				field.openAllMinedCells();
+				status = Status.LOST;
+			}
+			return;
+		}
 		field.openCell(position);
 
 		if (isGameWon()) {
