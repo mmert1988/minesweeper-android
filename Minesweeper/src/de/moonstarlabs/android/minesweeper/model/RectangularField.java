@@ -196,6 +196,7 @@ public class RectangularField extends ContentObservable implements Field {
 			}
 		}
 		
+		notifyChange(false);
 		return true;
 	}
 	

@@ -43,7 +43,9 @@ public class Game implements Parcelable {
 			start();
 		}
 
-		if (status != Status.RUNNING || field.getCell(position).isMarked()) {
+		if (status != Status.RUNNING
+				|| (field.getCell(position).isMarked() && field
+						.calculateMinedNeighbours(position) > 0)) {
 			return;
 		}
 
@@ -57,8 +59,9 @@ public class Game implements Parcelable {
 			return;
 		}
 
-		if(field.getCell(position).isOpen() && field.calculateMinedNeighbours(position) > 0){
-			if(!field.openUnmarkedNeighbours(position)){
+		if (field.getCell(position).isOpen()
+				&& field.calculateMinedNeighbours(position) > 0) {
+			if (!field.openUnmarkedNeighbours(position)) {
 				field.openAllMinedCells();
 				status = Status.LOST;
 			}
@@ -80,18 +83,25 @@ public class Game implements Parcelable {
 			start();
 		}
 
-		if (status != Status.RUNNING || field.getCell(position).isOpen()) {
+		if (status != Status.RUNNING) {
 			return;
 		}
 
-		if (!field.getCell(position).isMarked()) {
-			field.markCell(position);
+		if (field.getCell(position).isOpen() && field.calculateMinedNeighbours(position) > 0) {
+			if (!field.openUnmarkedNeighbours(position)) {
+				field.openAllMinedCells();
+				status = Status.LOST;
+			}
 		} else {
-			field.unmarkCell(position);
-		}
-
-		for (GameListener listener : listeners) {
-			listener.onMinesLeftChanged(computeMinesLeft());
+			if (!field.getCell(position).isMarked()) {
+				field.markCell(position);
+			} else {
+				field.unmarkCell(position);
+			}
+			
+			for (GameListener listener : listeners) {
+				listener.onMinesLeftChanged(computeMinesLeft());
+			}
 		}
 
 		if (isGameWon()) {
@@ -102,17 +112,17 @@ public class Game implements Parcelable {
 			}
 		}
 	}
-	
+
 	public void toggleSuspectCell(int position) {
 		if (status == Status.NEW) {
 			start();
 		}
-		
+
 		Cell cell = field.getCell(position);
 		if (status != Status.RUNNING || cell.isOpen() || cell.isMarked()) {
 			return;
 		}
-		
+
 		if (cell.isSuspect()) {
 			field.unsuspect(position);
 		} else {
@@ -137,11 +147,12 @@ public class Game implements Parcelable {
 		mineCoords.add(new Pair<Integer, Integer>(4, 4));
 		mineCoords.add(new Pair<Integer, Integer>(5, 5));
 		field = new RectangularField(6, 6, mineCoords);
-//		field = RectangularField.random(6, 6, 10);
+		// field = RectangularField.random(6, 6, 10);
 	}
 
 	private boolean isGameWon() {
-		return field.getOpenedCellsCount() + field.getMarkedCellsCount() == field.getCellsCount()
+		return field.getOpenedCellsCount() + field.getMarkedCellsCount() == field
+				.getCellsCount()
 				&& field.getMarkedCellsCount() == field.getMinedCellsCount();
 	}
 
