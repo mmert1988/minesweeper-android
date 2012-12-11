@@ -155,7 +155,7 @@ public class Game implements Parcelable {
 	}
 
 	private int computeMinesLeft() {
-		return field.getMinedCellsCount() - field.getRigthMarkedCells();
+		return field.getMinedCellsCount() - field.getMarkedCellsCount();
 	}
 
 	private void start() {
