@@ -65,9 +65,9 @@ public class Game implements Parcelable {
 				field.openAllMinedCells();
 				status = Status.LOST;
 			}
-			return;
+		} else {
+			field.openCell(position);
 		}
-		field.openCell(position);
 
 		if (isGameWon()) {
 			status = Status.WON;
@@ -151,13 +151,11 @@ public class Game implements Parcelable {
 	}
 
 	private boolean isGameWon() {
-		return field.getOpenedCellsCount() + field.getMarkedCellsCount() == field
-				.getCellsCount()
-				&& field.getMarkedCellsCount() == field.getMinedCellsCount();
+		return (field.getOpenedCellsCount() == field.getCellsCount()-field.getMinedCellsCount());
 	}
 
 	private int computeMinesLeft() {
-		return field.getMinedCellsCount() - field.getMarkedCellsCount();
+		return field.getMinedCellsCount() - field.getRigthMarkedCells();
 	}
 
 	private void start() {

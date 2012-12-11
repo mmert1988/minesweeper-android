@@ -30,4 +30,6 @@ public interface Field extends Parcelable {
 	
 	public abstract boolean openUnmarkedNeighbours(int position);
 	
+	public abstract int getRigthMarkedCells();
+	
 }
