@@ -19,7 +19,6 @@ import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
 import de.moonstarlabs.android.minesweeper.widget.FieldAdapter;
 import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemClickListener;
 import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemLongClickListener;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 
 public class MainActivity extends Activity implements OnClickListener, OnItemClickListener, OnItemLongClickListener,
 		GameListener {
@@ -32,7 +31,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 	private long lastTimerBase;
 	private ClickModeState clickModeState;
 
-	private RectangularFieldView fieldView;
+	private GridView fieldView;
 	private ImageButton newGameButton;
 	private ImageButton switchClickModeButton;
 	private TextView minesLeftView;
@@ -48,7 +47,7 @@ public class MainActivity extends Activity implements OnClickListener, OnItemCli
 		minesLeftView = (TextView) findViewById(R.id.minesLeftView);
 		secondsPastView = (Chronometer) findViewById(R.id.secondsPastView);
 		
-		fieldView = (RectangularFieldView) findViewById(R.id.fieldView);
+		fieldView = (GridView) findViewById(R.id.fieldView);
 		fieldView.setStretchMode(GridView.NO_STRETCH);
 		fieldView.setNumColumns(6);
 
