@@ -38,7 +38,6 @@ public class RectangularField extends ContentObservable implements Field {
 	private final Set<Pair<Integer, Integer>> mineCoords;
 	private int openedCells = 0;
 	private int markedCells = 0;
-	private int rigthMarkedCells = 0;
 	
 	public RectangularField(int rows, int columns, Set<Pair<Integer, Integer>> mineCoords) {
 		if (rows * columns < mineCoords.size()) {
@@ -126,8 +125,6 @@ public class RectangularField extends ContentObservable implements Field {
 	public void markCell(int position) {
 		getCell(position).mark();
 		markedCells++;
-		if(getCell(position).isMined())
-			rigthMarkedCells++;
 		notifyChange(false);
 	}
 	
@@ -136,8 +133,6 @@ public class RectangularField extends ContentObservable implements Field {
 	public void unmarkCell(int position) {
 		getCell(position).unmark();
 		markedCells--;
-		if(getCell(position).isMined())
-			rigthMarkedCells--;
 		notifyChange(false);
 	}
 	
@@ -165,6 +160,7 @@ public class RectangularField extends ContentObservable implements Field {
 		notifyChange(false);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean openUnmarkedNeighbours(int position) {
 		int row = position / rows;
@@ -260,7 +256,6 @@ public class RectangularField extends ContentObservable implements Field {
 		
 		out.writeInt(openedCells);
 		out.writeInt(markedCells);
-		out.writeInt(rigthMarkedCells);
 	}
 	
 	public static final Parcelable.Creator<RectangularField> CREATOR = new Creator<RectangularField>() {
@@ -295,16 +290,10 @@ public class RectangularField extends ContentObservable implements Field {
 		
 		openedCells = in.readInt();
 		markedCells = in.readInt();
-		rigthMarkedCells = in.readInt();
 	}
 	
 	private int convertToPosition(int row, int column) {
 		return row * columns + column;
-	}
-
-	@Override
-	public int getRigthMarkedCells() {
-		return rigthMarkedCells;
 	}
 
 }
