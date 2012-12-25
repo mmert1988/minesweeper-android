@@ -62,7 +62,7 @@ OnItemLongClickListener, GameListener {
             lastTimerBase = savedInstanceState.getLong(EXTRA_LAST_TIMER_BASE);
         }
         else {
-            game = new Game(null);
+            game = new Game(Game.DifficultyLevel.EASY);
             lastTimerBase = SystemClock.elapsedRealtime();
         }
         
