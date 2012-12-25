@@ -21,6 +21,7 @@ import de.moonstarlabs.android.minesweeper.model.RectangularField;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemClickListener;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemLongClickListener;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
 
 /**
  * Die Haupt-Activity zur Darstellung des Spieldfeldes.
@@ -36,7 +37,7 @@ OnItemLongClickListener, GameListener {
     private long lastTimerBase;
     private ClickModeState clickModeState;
     
-    private GridView fieldView;
+    private RectangularFieldView fieldView;
     private ImageButton newGameButton;
     private ImageButton switchClickModeButton;
     private TextView minesLeftView;
@@ -52,7 +53,7 @@ OnItemLongClickListener, GameListener {
         minesLeftView = (TextView)findViewById(R.id.minesLeftView);
         secondsPastView = (Chronometer)findViewById(R.id.secondsPastView);
         
-        fieldView = (GridView)findViewById(R.id.fieldView);
+        fieldView = (RectangularFieldView)findViewById(R.id.fieldView);
         fieldView.setStretchMode(GridView.NO_STRETCH);
         fieldView.setNumColumns(6);
         
