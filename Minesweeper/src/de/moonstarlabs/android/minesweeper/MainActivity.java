@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import de.moonstarlabs.android.minesweeper.game.ClickModeState;
 import de.moonstarlabs.android.minesweeper.game.Game;
+import de.moonstarlabs.android.minesweeper.game.Game.DifficultyLevel;
 import de.moonstarlabs.android.minesweeper.game.Game.Status;
 import de.moonstarlabs.android.minesweeper.game.GameListener;
 import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
@@ -42,6 +43,7 @@ OnItemLongClickListener, GameListener {
     private ImageButton switchClickModeButton;
     private TextView minesLeftView;
     private Chronometer secondsPastView;
+    private final Game.DifficultyLevel level = DifficultyLevel.EASY;
     
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -62,7 +64,7 @@ OnItemLongClickListener, GameListener {
             lastTimerBase = savedInstanceState.getLong(EXTRA_LAST_TIMER_BASE);
         }
         else {
-            game = new Game(Game.DifficultyLevel.EASY);
+            game = new Game(level);
             lastTimerBase = SystemClock.elapsedRealtime();
         }
         
@@ -104,7 +106,7 @@ OnItemLongClickListener, GameListener {
                 break;
                 
             case R.id.newGameButton:
-                game = new Game(null);
+                game = new Game(level);
                 initViews(game);
                 updateViewsOnStatusChange(game.getStatus());
                 break;
