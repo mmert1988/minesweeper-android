@@ -17,9 +17,10 @@ import de.moonstarlabs.android.minesweeper.game.Game.Status;
 import de.moonstarlabs.android.minesweeper.game.GameListener;
 import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
 import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
-import de.moonstarlabs.android.minesweeper.widget.FieldAdapter;
-import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemClickListener;
-import de.moonstarlabs.android.minesweeper.widget.FieldAdapter.OnItemLongClickListener;
+import de.moonstarlabs.android.minesweeper.model.RectangularField;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemClickListener;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemLongClickListener;
 
 /**
  * Die Haupt-Activity zur Darstellung des Spieldfeldes.
@@ -150,10 +151,15 @@ OnItemLongClickListener, GameListener {
     private void initViews(final Game g) {
         g.addListener(this);
         minesLeftView.setText(String.valueOf(g.getMinesLeft()));
-        FieldAdapter adapter = new FieldAdapter(this, g.getField());
-        adapter.setOnItemClickListener(this);
-        adapter.setOnItemLongClickListener(this);
-        fieldView.setAdapter(adapter);
+        if (g.getField() instanceof RectangularField) {
+            RectangularFieldAdapter adapter = new RectangularFieldAdapter(this,
+                    (RectangularField)g.getField());
+            adapter.setOnItemClickListener(this);
+            adapter.setOnItemLongClickListener(this);
+            fieldView.setAdapter(adapter);
+        } else {
+            throw new AssertionError();
+        }
     }
     
     private void updateViewsOnStatusChange(final Game.Status status) {

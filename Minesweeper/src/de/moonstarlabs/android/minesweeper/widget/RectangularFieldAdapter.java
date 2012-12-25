@@ -4,7 +4,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.content.Context;
-import android.database.ContentObservable;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -16,59 +15,69 @@ import android.widget.ImageView;
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
+import de.moonstarlabs.android.minesweeper.model.RectangularField;
 
 /**
- * Adapter-Erweiterung, die ein Objekt der Field-Klasse einem AdapterView anpasst.
+ * Adapter-Erweiterung, die ein Objekt der Field-Klasse einem AdapterView
+ * anpasst.
  */
-public class FieldAdapter extends BaseAdapter implements Observer {
+public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     /**
-     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für Click und LongClick nicht funktionieren.
+     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
+     * Click und LongClick nicht funktionieren.
      */
     public interface OnItemClickListener {
         /**
          * Workaround-Implementierung.
-         * @param item Item
-         * @param position Position
+         * 
+         * @param item
+         *            Item
+         * @param position
+         *            Position
          */
         void onItemClick(View item, int position);
     }
     
     /**
-     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für Click und LongClick nicht funktionieren.
+     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
+     * Click und LongClick nicht funktionieren.
      */
     public interface OnItemLongClickListener {
         /**
          * Workaround-Implementierung.
-         * @param item Item
-         * @param position Position
+         * 
+         * @param item
+         *            Item
+         * @param position
+         *            Position
          */
         void onItemLongClick(View item, int position);
     }
     
     private final Context mContext;
-    private final Field mField;
+    private final RectangularField mField;
     private OnItemClickListener itemClickListener;
     private OnItemLongClickListener itemLongClickListener;
     private final Handler changeHandler = new Handler();
     
     /**
-     * Creates a new instance of {@link FieldAdapter}.
-     * @param context Application Context
-     * @param field Objekt für Feld
+     * Creates a new instance of {@link RectangularFieldAdapter}.
+     * 
+     * @param context
+     *            Application Context
+     * @param field
+     *            Objekt für Feld
      */
-    public FieldAdapter(final Context context, final Field field) {
+    public RectangularFieldAdapter(final Context context, final RectangularField field) {
         mContext = context;
         mField = field;
-        if (mField instanceof ContentObservable) {
-            ContentObservable observable = (ContentObservable) mField;
-            observable.registerObserver(new ContentObserver(changeHandler) {
-                @Override
-                public void onChange(final boolean selfChange) {
-                    super.onChange(selfChange);
-                    notifyDataSetChanged();
-                }
-            });
-        }
+        mField.registerObserver(new ContentObserver(changeHandler) {
+            @Override
+            public void onChange(final boolean selfChange) {
+                super.onChange(selfChange);
+                notifyDataSetChanged();
+            }
+        });
     }
     
     @Override
@@ -107,7 +116,7 @@ public class FieldAdapter extends BaseAdapter implements Observer {
             throw new AssertionError();
         }
         
-        ImageView button = (ImageView) cellView;
+        ImageView button = (ImageView)cellView;
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
@@ -207,6 +216,7 @@ public class FieldAdapter extends BaseAdapter implements Observer {
     
     /**
      * Gibt das Field-Objekt zurück.
+     * 
      * @return Field-Objekt
      */
     public Field getField() {
@@ -220,7 +230,9 @@ public class FieldAdapter extends BaseAdapter implements Observer {
     
     /**
      * Workaround für Android-Bug: setzt den OnItemClickListener.
-     * @param listener OnItemClickListener
+     * 
+     * @param listener
+     *            OnItemClickListener
      */
     public void setOnItemClickListener(final OnItemClickListener listener) {
         itemClickListener = listener;
@@ -228,7 +240,9 @@ public class FieldAdapter extends BaseAdapter implements Observer {
     
     /**
      * Workaround für Android-Bug: setzt den OnItemLongClickListener.
-     * @param listener OnItemLongClickListener
+     * 
+     * @param listener
+     *            OnItemLongClickListener
      */
     public void setOnItemLongClickListener(final OnItemLongClickListener listener) {
         itemLongClickListener = listener;
