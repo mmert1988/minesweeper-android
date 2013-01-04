@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
-import de.moonstarlabs.android.minesweeper.model.Field;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
 
 /**
@@ -22,42 +21,8 @@ import de.moonstarlabs.android.minesweeper.model.RectangularField;
  * anpasst.
  */
 public class RectangularFieldAdapter extends BaseAdapter implements Observer {
-    /**
-     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
-     * Click und LongClick nicht funktionieren.
-     */
-    public interface OnItemClickListener {
-        /**
-         * Workaround-Implementierung.
-         * 
-         * @param item
-         *            Item
-         * @param position
-         *            Position
-         */
-        void onItemClick(View item, int position);
-    }
-    
-    /**
-     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
-     * Click und LongClick nicht funktionieren.
-     */
-    public interface OnItemLongClickListener {
-        /**
-         * Workaround-Implementierung.
-         * 
-         * @param item
-         *            Item
-         * @param position
-         *            Position
-         */
-        void onItemLongClick(View item, int position);
-    }
-    
     private final Context mContext;
     private final RectangularField mField;
-    private OnItemClickListener itemClickListener;
-    private OnItemLongClickListener itemLongClickListener;
     private final Handler changeHandler = new Handler();
     
     /**
@@ -71,13 +36,13 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     public RectangularFieldAdapter(final Context context, final RectangularField field) {
         mContext = context;
         mField = field;
-        mField.registerObserver(new ContentObserver(changeHandler) {
-            @Override
-            public void onChange(final boolean selfChange) {
-                super.onChange(selfChange);
-                notifyDataSetChanged();
-            }
-        });
+        //        mField.registerObserver(new ContentObserver(changeHandler) {
+        //            @Override
+        //            public void onChange(final boolean selfChange) {
+        //                super.onChange(selfChange);
+        //                notifyDataSetChanged();
+        //            }
+        //        });
     }
     
     @Override
@@ -117,24 +82,6 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
         }
         
         ImageView button = (ImageView)cellView;
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (itemClickListener != null) {
-                    itemClickListener.onItemClick(v, position);
-                }
-            }
-        });
-        button.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                if (itemLongClickListener != null) {
-                    itemLongClickListener.onItemLongClick(v, position);
-                    return true;
-                }
-                return false;
-            }
-        });
         
         if (cell.isMarked()) {
             button.setImageResource(R.drawable.flag);
@@ -215,12 +162,21 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     }
     
     /**
-     * Gibt das Field-Objekt zurück.
+     * Accessor für die Anzahl der Zeilen.
      * 
-     * @return Field-Objekt
+     * @return Anzahl der Zeilen
      */
-    public Field getField() {
-        return mField;
+    public int getRows() {
+        return mField.getRows();
+    }
+    
+    /**
+     * Accessor für die Anzahl der Spalten.
+     * 
+     * @return Anzahl der Spalten
+     */
+    public int getColumns() {
+        return mField.getColumns();
     }
     
     @Override
@@ -228,24 +184,8 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
         notifyDataSetChanged();
     }
     
-    /**
-     * Workaround für Android-Bug: setzt den OnItemClickListener.
-     * 
-     * @param listener
-     *            OnItemClickListener
-     */
-    public void setOnItemClickListener(final OnItemClickListener listener) {
-        itemClickListener = listener;
-    }
-    
-    /**
-     * Workaround für Android-Bug: setzt den OnItemLongClickListener.
-     * 
-     * @param listener
-     *            OnItemLongClickListener
-     */
-    public void setOnItemLongClickListener(final OnItemLongClickListener listener) {
-        itemLongClickListener = listener;
+    public void registerObserver(final ContentObserver observer) {
+        mField.registerObserver(observer);
     }
     
 }

@@ -42,13 +42,25 @@
             android:gravity="right|center_vertical" />
     </LinearLayout>
 
-    <de.moonstarlabs.android.minesweeper.widget.RectangularFieldView
-        android:id="@+id/fieldView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:columnWidth="50dp"
-        android:gravity="center" />
+    <de.moonstarlabs.android.minesweeper.widget.VScroll
+        android:id="@+id/verticalScroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+
+        <de.moonstarlabs.android.minesweeper.widget.HScroll
+            android:id="@+id/horizontalScroll"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <de.moonstarlabs.android.minesweeper.widget.RectangularFieldView2
+                android:id="@+id/fieldView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="vertical" />
+        </de.moonstarlabs.android.minesweeper.widget.HScroll>
+    </de.moonstarlabs.android.minesweeper.widget.VScroll>
 
     <FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -61,7 +73,6 @@
             android:id="@+id/switchClickMode"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_gravity="center_horizontal"
             android:background="@drawable/cell_background"
             android:contentDescription="@string/content_description_switch_click_mode_button"
             android:onClick="onClick" />

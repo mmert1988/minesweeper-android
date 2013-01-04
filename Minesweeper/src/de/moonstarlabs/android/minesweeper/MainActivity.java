@@ -3,12 +3,16 @@ package de.moonstarlabs.android.minesweeper;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Chronometer;
-import android.widget.GridView;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import de.moonstarlabs.android.minesweeper.game.ClickModeState;
@@ -20,15 +24,15 @@ import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
 import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemClickListener;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnItemLongClickListener;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView2;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView2.OnItemClickListener;
+import de.moonstarlabs.android.minesweeper.widget.RectangularFieldView2.OnItemLongClickListener;
 
 /**
  * Die Haupt-Activity zur Darstellung des Spieldfeldes.
  */
 public class MainActivity extends Activity implements OnClickListener, OnItemClickListener,
-OnItemLongClickListener, GameListener {
+OnItemLongClickListener, GameListener, OnTouchListener {
     private static final ClickModeState OPEN_CELL_CLICK_MODE_STATE = new OpenCellModeState();
     private static final ClickModeState SET_FLAG_CLICK_MODE_STATE = new ToggleMarkModeState();
     private static final String EXTRA_GAME = "game";
@@ -38,12 +42,20 @@ OnItemLongClickListener, GameListener {
     private long lastTimerBase;
     private ClickModeState clickModeState;
     
-    private RectangularFieldView fieldView;
+    private RectangularFieldView2 fieldView;
     private ImageButton newGameButton;
     private ImageButton switchClickModeButton;
     private TextView minesLeftView;
     private Chronometer secondsPastView;
     private final Game.DifficultyLevel level = DifficultyLevel.EASY;
+    
+    private float mx;
+    private float my;
+    private float curX;
+    private float curY;
+    
+    private ScrollView vScroll;
+    private HorizontalScrollView hScroll;
     
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -55,9 +67,11 @@ OnItemLongClickListener, GameListener {
         minesLeftView = (TextView)findViewById(R.id.minesLeftView);
         secondsPastView = (Chronometer)findViewById(R.id.secondsPastView);
         
-        fieldView = (RectangularFieldView)findViewById(R.id.fieldView);
-        fieldView.setStretchMode(GridView.NO_STRETCH);
-        fieldView.setNumColumns(6);
+        fieldView = (RectangularFieldView2)findViewById(R.id.fieldView);
+        fieldView.setOnItemClickListener(this);
+        fieldView.setOnItemLongClickListener(this);
+        //        fieldView.setStretchMode(GridView.NO_STRETCH);
+        //        fieldView.setNumColumns(3);
         
         if (savedInstanceState != null) {
             game = savedInstanceState.getParcelable(EXTRA_GAME);
@@ -71,6 +85,10 @@ OnItemLongClickListener, GameListener {
         secondsPastView.setBase(lastTimerBase);
         initViews(game);
         updateViewsOnStatusChange(game.getStatus());
+        
+        vScroll = (ScrollView)findViewById(R.id.verticalScroll);
+        hScroll = (HorizontalScrollView)findViewById(R.id.horizontalScroll);
+        vScroll.setOnTouchListener(this);
     }
     
     @Override
@@ -132,12 +150,12 @@ OnItemLongClickListener, GameListener {
     }
     
     @Override
-    public void onItemLongClick(final View item, final int position) {
+    public void onCellLongClick(final View item, final int position) {
         clickModeState.longClickOn(game, position);
     }
     
     @Override
-    public void onItemClick(final View item, final int position) {
+    public void onCellClick(final View item, final int position) {
         clickModeState.clickOn(game, position);
     }
     
@@ -154,15 +172,8 @@ OnItemLongClickListener, GameListener {
     private void initViews(final Game g) {
         g.addListener(this);
         minesLeftView.setText(String.valueOf(g.getMinesLeft()));
-        if (g.getField() instanceof RectangularField) {
-            RectangularFieldAdapter adapter = new RectangularFieldAdapter(this,
-                    (RectangularField)g.getField());
-            adapter.setOnItemClickListener(this);
-            adapter.setOnItemLongClickListener(this);
-            fieldView.setAdapter(adapter);
-        } else {
-            throw new AssertionError();
-        }
+        RectangularFieldAdapter adapter = new RectangularFieldAdapter(this, (RectangularField)g.getField());
+        fieldView.setAdapter(adapter);
     }
     
     private void updateViewsOnStatusChange(final Game.Status status) {
@@ -192,6 +203,36 @@ OnItemLongClickListener, GameListener {
             default:
                 break;
         }
+    }
+    
+    @Override
+    public boolean onTouch(final View v, final MotionEvent event) {
+        Log.i("MainActivity", "onTouch");
+        switch (event.getAction()) {
+            
+            case MotionEvent.ACTION_DOWN:
+                mx = event.getX();
+                my = event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                curX = event.getX();
+                curY = event.getY();
+                vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                mx = curX;
+                my = curY;
+                break;
+            case MotionEvent.ACTION_UP:
+                curX = event.getX();
+                curY = event.getY();
+                vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                break;
+            default:
+                break;
+        }
+        
+        return false;
     }
     
 }

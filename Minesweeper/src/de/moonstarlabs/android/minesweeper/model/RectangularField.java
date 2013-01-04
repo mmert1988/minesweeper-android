@@ -230,6 +230,22 @@ public class RectangularField extends ContentObservable implements Field {
         return true;
     }
     
+    /**
+     * Accessor für die Anzahl der Zeilen.
+     * @return Anzahl der Zeilen
+     */
+    public int getRows() {
+        return rows;
+    }
+    
+    /**
+     * Accessor für die Anzahl der Spalten.
+     * @return Anzahl der Spalten
+     */
+    public int getColumns() {
+        return columns;
+    }
+    
     private void initField() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {

@@ -194,10 +194,16 @@ public class Game implements Parcelable {
         mineCoords.add(new Pair<Integer, Integer>(0, 0));
         mineCoords.add(new Pair<Integer, Integer>(1, 1));
         mineCoords.add(new Pair<Integer, Integer>(2, 2));
-        mineCoords.add(new Pair<Integer, Integer>(3, 3));
-        mineCoords.add(new Pair<Integer, Integer>(4, 4));
-        mineCoords.add(new Pair<Integer, Integer>(5, 5));
-        field = new RectangularField(6, 6, mineCoords);
+        //        mineCoords.add(new Pair<Integer, Integer>(3, 3));
+        //        mineCoords.add(new Pair<Integer, Integer>(4, 4));
+        //        mineCoords.add(new Pair<Integer, Integer>(5, 5));
+        //        mineCoords.add(new Pair<Integer, Integer>(6, 6));
+        //        mineCoords.add(new Pair<Integer, Integer>(7, 7));
+        //        mineCoords.add(new Pair<Integer, Integer>(8, 8));
+        //        mineCoords.add(new Pair<Integer, Integer>(9, 9));
+        //        mineCoords.add(new Pair<Integer, Integer>(10, 10));
+        //        mineCoords.add(new Pair<Integer, Integer>(11, 11));
+        field = new RectangularField(3, 3, mineCoords);
         // field = RectangularField.random(6, 6, 10);
     }
     
