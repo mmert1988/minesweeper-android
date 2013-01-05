@@ -74,7 +74,7 @@ public class RectangularField extends ContentObservable implements Field {
     
     @Override
     public Cell getCell(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         return cells[row][column];
     }
@@ -101,7 +101,7 @@ public class RectangularField extends ContentObservable implements Field {
     
     @Override
     public int calculateMinedNeighbours(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         return computeMinedNeighbours(row, column);
     }
@@ -113,7 +113,7 @@ public class RectangularField extends ContentObservable implements Field {
     }
     
     private void openCellHelper(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         Cell cell = cells[row][column];
         
@@ -178,7 +178,7 @@ public class RectangularField extends ContentObservable implements Field {
     
     @Override
     public boolean openUnmarkedNeighbours(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         
         int countMinedNeihbours = computeMinedNeighbours(row, column);
