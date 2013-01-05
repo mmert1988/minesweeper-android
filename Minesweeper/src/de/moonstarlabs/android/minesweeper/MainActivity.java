@@ -2,11 +2,14 @@ package de.moonstarlabs.android.minesweeper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
@@ -39,6 +42,7 @@ OnCellLongClickListener, GameListener, FieldListener {
     private static final ClickModeState SET_FLAG_CLICK_MODE_STATE = new ToggleMarkModeState();
     private static final String EXTRA_GAME = "game";
     private static final String EXTRA_LAST_TIMER_BASE = "timerBase";
+    private static final String PREF_KEY_LEVEL = "difficulty level";
     
     private Game game;
     private long lastTimerBase;
@@ -49,15 +53,17 @@ OnCellLongClickListener, GameListener, FieldListener {
     private ImageButton switchClickModeButton;
     private TextView minesLeftView;
     private Chronometer secondsPastView;
-    private final Game.DifficultyLevel level = DifficultyLevel.EASY;
+    private Game.DifficultyLevel level = DifficultyLevel.EASY;
     
     private HorizontalScrollView hScroll;
     
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         setViews();
+        
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        level = DifficultyLevel.valueOf(prefs.getString(PREF_KEY_LEVEL, DifficultyLevel.EASY.toString()));
         
         if (savedInstanceState != null) {
             game = savedInstanceState.getParcelable(EXTRA_GAME);
@@ -103,12 +109,38 @@ OnCellLongClickListener, GameListener, FieldListener {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_GAME, game);
         outState.putLong(EXTRA_LAST_TIMER_BASE, lastTimerBase);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor prefEdit = prefs.edit();
+        prefEdit.putString(PREF_KEY_LEVEL, level.toString());
+        prefEdit.commit();
     }
     
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                return true;
+            case R.id.menu_difficulty_easy:
+                level = DifficultyLevel.EASY;
+                initNewGame(level);
+                return true;
+            case R.id.menu_difficulty_medium:
+                level = DifficultyLevel.MEDIUM;
+                initNewGame(level);
+                return true;
+            case R.id.menu_difficulty_hard:
+                level = DifficultyLevel.HARD;
+                initNewGame(level);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     
     @Override
@@ -119,10 +151,7 @@ OnCellLongClickListener, GameListener, FieldListener {
                 break;
                 
             case R.id.newGameButton:
-                game = new Game(level);
-                initViews(game);
-                refreshFieldView(game);
-                updateViewsOnStatusChange(game.getStatus());
+                initNewGame(level);
                 break;
             default:
                 break;
@@ -168,6 +197,13 @@ OnCellLongClickListener, GameListener, FieldListener {
     @Override
     public void onFieldChanged() {
         refreshFieldView(game);
+    }
+    
+    private void initNewGame(final DifficultyLevel level) {
+        game = new Game(level);
+        initViews(game);
+        refreshFieldView(game);
+        updateViewsOnStatusChange(game.getStatus());
     }
     
     private void initViews(final Game g) {
