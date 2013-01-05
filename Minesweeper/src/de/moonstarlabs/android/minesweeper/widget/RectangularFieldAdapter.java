@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import de.moonstarlabs.android.minesweeper.R;
 import de.moonstarlabs.android.minesweeper.model.Cell;
-import de.moonstarlabs.android.minesweeper.model.Field;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
 
 /**
@@ -26,10 +25,10 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
      * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
      * Click und LongClick nicht funktionieren.
      */
-    public interface OnItemClickListener {
+    public interface OnCellClickListener {
         /**
          * Workaround-Implementierung.
-         * 
+         *
          * @param item
          *            Item
          * @param position
@@ -42,10 +41,10 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
      * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
      * Click und LongClick nicht funktionieren.
      */
-    public interface OnItemLongClickListener {
+    public interface OnCellLongClickListener {
         /**
          * Workaround-Implementierung.
-         * 
+         *
          * @param item
          *            Item
          * @param position
@@ -56,8 +55,8 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     
     private final Context mContext;
     private final RectangularField mField;
-    private OnItemClickListener itemClickListener;
-    private OnItemLongClickListener itemLongClickListener;
+    private OnCellClickListener onCellClickListener;
+    private OnCellLongClickListener onCellLongClickListener;
     private final Handler changeHandler = new Handler();
     
     /**
@@ -117,19 +116,20 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
         }
         
         ImageView button = (ImageView)cellView;
+        
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (itemClickListener != null) {
-                    itemClickListener.onItemClick(v, position);
+                if (onCellClickListener != null) {
+                    onCellClickListener.onItemClick(v, position);
                 }
             }
         });
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) {
-                if (itemLongClickListener != null) {
-                    itemLongClickListener.onItemLongClick(v, position);
+                if (onCellLongClickListener != null) {
+                    onCellLongClickListener.onItemLongClick(v, position);
                     return true;
                 }
                 return false;
@@ -215,12 +215,21 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     }
     
     /**
-     * Gibt das Field-Objekt zurück.
+     * Accessor für die Anzahl der Zeilen.
      * 
-     * @return Field-Objekt
+     * @return Anzahl der Zeilen
      */
-    public Field getField() {
-        return mField;
+    public int getRows() {
+        return mField.getRows();
+    }
+    
+    /**
+     * Accessor für die Anzahl der Spalten.
+     * 
+     * @return Anzahl der Spalten
+     */
+    public int getColumns() {
+        return mField.getColumns();
     }
     
     @Override
@@ -230,22 +239,22 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     
     /**
      * Workaround für Android-Bug: setzt den OnItemClickListener.
-     * 
+     *
      * @param listener
      *            OnItemClickListener
      */
-    public void setOnItemClickListener(final OnItemClickListener listener) {
-        itemClickListener = listener;
+    public void setOnCellClickListener(final OnCellClickListener listener) {
+        onCellClickListener = listener;
     }
     
     /**
      * Workaround für Android-Bug: setzt den OnItemLongClickListener.
-     * 
+     *
      * @param listener
      *            OnItemLongClickListener
      */
-    public void setOnItemLongClickListener(final OnItemLongClickListener listener) {
-        itemLongClickListener = listener;
+    public void setOnCellLongClickListener(final OnCellLongClickListener listener) {
+        onCellLongClickListener = listener;
     }
     
 }

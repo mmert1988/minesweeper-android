@@ -6,7 +6,6 @@ import java.util.Set;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.util.Pair;
 
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
@@ -24,7 +23,9 @@ public class Game implements Parcelable {
     
     /**
      * Creates a new instance of {@link Game}.
-     * @param level Schwierigkeits-Level des Spiels
+     * 
+     * @param level
+     *            Schwierigkeits-Level des Spiels
      */
     public Game(final DifficultyLevel level) {
         initGame(level);
@@ -32,6 +33,7 @@ public class Game implements Parcelable {
     
     /**
      * Gibt den Status des Spiels zurück.
+     * 
      * @return den Status des Spiels
      */
     public Status getStatus() {
@@ -40,6 +42,7 @@ public class Game implements Parcelable {
     
     /**
      * Gibt die Anzahl der verbleibenden Minen zurück.
+     * 
      * @return die Anzahl der verbleibenden Minen
      */
     public int getMinesLeft() {
@@ -48,6 +51,7 @@ public class Game implements Parcelable {
     
     /**
      * Gibt die Anfangszeit des Spiels in Millisekunden zurück.
+     * 
      * @return die Anfangszeit des Spiels in Millisekunden
      */
     public long getStartMillis() {
@@ -56,6 +60,7 @@ public class Game implements Parcelable {
     
     /**
      * Gibt das Spielfeld zurück.
+     * 
      * @return das Spielfeld
      */
     public Field getField() {
@@ -64,7 +69,9 @@ public class Game implements Parcelable {
     
     /**
      * Öffnet eine Zelle. Kann unter Umständen den Status des Spiels ändern.
-     * @param position die Position der Zelle
+     * 
+     * @param position
+     *            die Position der Zelle
      */
     public void openCell(final int position) {
         if (status == Status.NEW) {
@@ -107,7 +114,9 @@ public class Game implements Parcelable {
     
     /**
      * Umschaltet die Markierung von einer Zelle.
-     * @param position die Position der Zelle
+     * 
+     * @param position
+     *            die Position der Zelle
      */
     public void toggleMarkCell(final int position) {
         if (status == Status.NEW) {
@@ -148,7 +157,9 @@ public class Game implements Parcelable {
     
     /**
      * Umschaltet den Verdacht zu einer Zelle.
-     * @param position die Position der Zelle
+     * 
+     * @param position
+     *            die Position der Zelle
      */
     public void toggleSuspectCell(final int position) {
         if (status == Status.NEW) {
@@ -170,7 +181,9 @@ public class Game implements Parcelable {
     
     /**
      * Fügt neuen Listener hinzu.
-     * @param listener Listener
+     * 
+     * @param listener
+     *            Listener
      */
     public void addListener(final GameListener listener) {
         listeners.add(listener);
@@ -178,7 +191,9 @@ public class Game implements Parcelable {
     
     /**
      * Entfernt Listener.
-     * @param listener Listener
+     * 
+     * @param listener
+     *            Listener
      */
     public void removeListener(final GameListener listener) {
         listeners.remove(listener);
@@ -186,19 +201,18 @@ public class Game implements Parcelable {
     
     private void initGame(final DifficultyLevel level) {
         switch (level) {
-            default:
-                // TODO
+            case EASY:
+                field = RectangularField.random(9, 9, 10);
                 break;
+            case MEDIUM:
+                field = RectangularField.random(16, 16, 40);
+                break;
+            case HARD:
+                field = RectangularField.random(16, 30, 99);
+                break;
+            default:
+                throw new IllegalArgumentException("Difficulty level is not supported: " + level);
         }
-        Set<Pair<Integer, Integer>> mineCoords = new HashSet<Pair<Integer, Integer>>();
-        mineCoords.add(new Pair<Integer, Integer>(0, 0));
-        mineCoords.add(new Pair<Integer, Integer>(1, 1));
-        mineCoords.add(new Pair<Integer, Integer>(2, 2));
-        mineCoords.add(new Pair<Integer, Integer>(3, 3));
-        mineCoords.add(new Pair<Integer, Integer>(4, 4));
-        mineCoords.add(new Pair<Integer, Integer>(5, 5));
-        field = new RectangularField(6, 6, mineCoords);
-        // field = RectangularField.random(6, 6, 10);
     }
     
     private boolean isGameWon() {

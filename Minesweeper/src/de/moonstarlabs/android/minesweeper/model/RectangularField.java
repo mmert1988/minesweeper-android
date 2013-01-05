@@ -51,6 +51,7 @@ public class RectangularField extends ContentObservable implements Field {
     private final Set<Pair<Integer, Integer>> mineCoords;
     private int openedCells;
     private int markedCells;
+    private final Set<FieldListener> listeners = new HashSet<FieldListener>();
     
     /**
      * 
@@ -73,7 +74,7 @@ public class RectangularField extends ContentObservable implements Field {
     
     @Override
     public Cell getCell(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         return cells[row][column];
     }
@@ -100,20 +101,19 @@ public class RectangularField extends ContentObservable implements Field {
     
     @Override
     public int calculateMinedNeighbours(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         return computeMinedNeighbours(row, column);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void openCell(final int position) {
         openCellHelper(position);
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
     private void openCellHelper(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         Cell cell = cells[row][column];
         
@@ -141,50 +141,44 @@ public class RectangularField extends ContentObservable implements Field {
         }
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void markCell(final int position) {
         getCell(position).mark();
         markedCells++;
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void unmarkCell(final int position) {
         getCell(position).unmark();
         markedCells--;
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void suspect(final int position) {
         getCell(position).suspect();
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void unsuspect(final int position) {
         getCell(position).unSuspect();
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void openAllMinedCells() {
         for (Pair<Integer, Integer> coord: mineCoords) {
             openedCells++;
             cells[coord.first][coord.second].open();
         }
-        notifyChange(false);
+        notifyFieldChanged();
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public boolean openUnmarkedNeighbours(final int position) {
-        int row = position / rows;
+        int row = position / columns;
         int column = position % columns;
         
         int countMinedNeihbours = computeMinedNeighbours(row, column);
@@ -226,8 +220,42 @@ public class RectangularField extends ContentObservable implements Field {
             }
         }
         
-        notifyChange(false);
+        notifyFieldChanged();
         return true;
+    }
+    
+    @Override
+    public void addListener(final FieldListener listener) {
+        listeners.add(listener);
+    }
+    
+    @Override
+    public void removeListener(final FieldListener listener) {
+        listeners.remove(listener);
+    }
+    
+    /**
+     * Accessor für die Anzahl der Zeilen.
+     * @return Anzahl der Zeilen
+     */
+    public int getRows() {
+        return rows;
+    }
+    
+    /**
+     * Accessor für die Anzahl der Spalten.
+     * @return Anzahl der Spalten
+     */
+    public int getColumns() {
+        return columns;
+    }
+    
+    @SuppressWarnings("deprecation")
+    private void notifyFieldChanged() {
+        notifyChange(false);
+        for (FieldListener listener: listeners) {
+            listener.onFieldChanged();
+        }
     }
     
     private void initField() {
