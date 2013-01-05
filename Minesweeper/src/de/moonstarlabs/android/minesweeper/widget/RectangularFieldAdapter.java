@@ -21,8 +21,42 @@ import de.moonstarlabs.android.minesweeper.model.RectangularField;
  * anpasst.
  */
 public class RectangularFieldAdapter extends BaseAdapter implements Observer {
+    /**
+     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
+     * Click und LongClick nicht funktionieren.
+     */
+    public interface OnCellClickListener {
+        /**
+         * Workaround-Implementierung.
+         *
+         * @param item
+         *            Item
+         * @param position
+         *            Position
+         */
+        void onItemClick(View item, int position);
+    }
+    
+    /**
+     * Workaround für einen Bug in GridView, weswegen die Standard-Listener für
+     * Click und LongClick nicht funktionieren.
+     */
+    public interface OnCellLongClickListener {
+        /**
+         * Workaround-Implementierung.
+         *
+         * @param item
+         *            Item
+         * @param position
+         *            Position
+         */
+        void onItemLongClick(View item, int position);
+    }
+    
     private final Context mContext;
     private final RectangularField mField;
+    private OnCellClickListener onCellClickListener;
+    private OnCellLongClickListener onCellLongClickListener;
     private final Handler changeHandler = new Handler();
     
     /**
@@ -36,13 +70,13 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
     public RectangularFieldAdapter(final Context context, final RectangularField field) {
         mContext = context;
         mField = field;
-        //        mField.registerObserver(new ContentObserver(changeHandler) {
-        //            @Override
-        //            public void onChange(final boolean selfChange) {
-        //                super.onChange(selfChange);
-        //                notifyDataSetChanged();
-        //            }
-        //        });
+        mField.registerObserver(new ContentObserver(changeHandler) {
+            @Override
+            public void onChange(final boolean selfChange) {
+                super.onChange(selfChange);
+                notifyDataSetChanged();
+            }
+        });
     }
     
     @Override
@@ -82,6 +116,25 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
         }
         
         ImageView button = (ImageView)cellView;
+        
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (onCellClickListener != null) {
+                    onCellClickListener.onItemClick(v, position);
+                }
+            }
+        });
+        button.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View v) {
+                if (onCellLongClickListener != null) {
+                    onCellLongClickListener.onItemLongClick(v, position);
+                    return true;
+                }
+                return false;
+            }
+        });
         
         if (cell.isMarked()) {
             button.setImageResource(R.drawable.flag);
@@ -184,8 +237,24 @@ public class RectangularFieldAdapter extends BaseAdapter implements Observer {
         notifyDataSetChanged();
     }
     
-    public void registerObserver(final ContentObserver observer) {
-        mField.registerObserver(observer);
+    /**
+     * Workaround für Android-Bug: setzt den OnItemClickListener.
+     *
+     * @param listener
+     *            OnItemClickListener
+     */
+    public void setOnCellClickListener(final OnCellClickListener listener) {
+        onCellClickListener = listener;
+    }
+    
+    /**
+     * Workaround für Android-Bug: setzt den OnItemLongClickListener.
+     *
+     * @param listener
+     *            OnItemLongClickListener
+     */
+    public void setOnCellLongClickListener(final OnCellLongClickListener listener) {
+        onCellLongClickListener = listener;
     }
     
 }

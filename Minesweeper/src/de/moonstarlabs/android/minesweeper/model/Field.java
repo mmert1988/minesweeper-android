@@ -87,4 +87,8 @@ public interface Field extends Parcelable {
      */
     boolean openUnmarkedNeighbours(int position);
     
+    void addListener(FieldListener listener);
+    
+    void removeListener(FieldListener listener);
+    
 }
