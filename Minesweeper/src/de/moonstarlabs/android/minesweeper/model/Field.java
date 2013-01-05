@@ -87,8 +87,16 @@ public interface Field extends Parcelable {
      */
     boolean openUnmarkedNeighbours(int position);
     
+    /**
+     * Registriert ein neues Listener-Objekt beim Feld.
+     * @param listener FieldListener
+     */
     void addListener(FieldListener listener);
     
+    /**
+     * Entfernt die Registrierung des Listener-Objektes beim Feld.
+     * @param listener FieldListener
+     */
     void removeListener(FieldListener listener);
     
 }

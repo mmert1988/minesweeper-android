@@ -297,7 +297,6 @@ public class Game implements Parcelable {
         public Game[] newArray(final int size) {
             return new Game[size];
         }
-        
         @Override
         public Game createFromParcel(final Parcel in) {
             return new Game(in);
