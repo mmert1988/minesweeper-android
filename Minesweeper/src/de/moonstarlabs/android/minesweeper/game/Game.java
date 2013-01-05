@@ -6,7 +6,6 @@ import java.util.Set;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.util.Pair;
 
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;
@@ -202,25 +201,18 @@ public class Game implements Parcelable {
     
     private void initGame(final DifficultyLevel level) {
         switch (level) {
-            default:
-                // TODO
+            case EASY:
+                field = RectangularField.random(9, 9, 10);
                 break;
+            case MEDIUM:
+                field = RectangularField.random(16, 16, 40);
+                break;
+            case HARD:
+                field = RectangularField.random(16, 30, 99);
+                break;
+            default:
+                throw new IllegalArgumentException("Difficulty level is not supported: " + level);
         }
-        Set<Pair<Integer, Integer>> mineCoords = new HashSet<Pair<Integer, Integer>>();
-        mineCoords.add(new Pair<Integer, Integer>(0, 0));
-        mineCoords.add(new Pair<Integer, Integer>(1, 1));
-        mineCoords.add(new Pair<Integer, Integer>(2, 2));
-        mineCoords.add(new Pair<Integer, Integer>(3, 3));
-        mineCoords.add(new Pair<Integer, Integer>(4, 4));
-        mineCoords.add(new Pair<Integer, Integer>(5, 5));
-        mineCoords.add(new Pair<Integer, Integer>(6, 6));
-        mineCoords.add(new Pair<Integer, Integer>(7, 7));
-        mineCoords.add(new Pair<Integer, Integer>(8, 8));
-        mineCoords.add(new Pair<Integer, Integer>(9, 9));
-        mineCoords.add(new Pair<Integer, Integer>(10, 10));
-        mineCoords.add(new Pair<Integer, Integer>(11, 11));
-        field = new RectangularField(12, 12, mineCoords);
-        field = RectangularField.random(20, 20, 25);
     }
     
     private boolean isGameWon() {
