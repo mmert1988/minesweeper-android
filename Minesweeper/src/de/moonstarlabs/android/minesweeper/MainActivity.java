@@ -45,7 +45,6 @@ OnCellLongClickListener, GameListener, FieldListener {
     private static final String PREF_KEY_LEVEL = "difficulty level";
     
     private Game game;
-    private long lastTimerBase;
     private ClickModeState clickModeState = OPEN_CELL_CLICK_MODE_STATE;
     
     private TableLayout fieldView;
@@ -67,14 +66,11 @@ OnCellLongClickListener, GameListener, FieldListener {
         
         if (savedInstanceState != null) {
             game = savedInstanceState.getParcelable(EXTRA_GAME);
-            lastTimerBase = savedInstanceState.getLong(EXTRA_LAST_TIMER_BASE);
         }
         else {
             game = new Game(level);
-            lastTimerBase = SystemClock.elapsedRealtime();
         }
         
-        secondsPastView.setBase(lastTimerBase);
         initViews(game);
         refreshFieldView(game);
         updateViewsOnStatusChange(game.getStatus());
@@ -96,19 +92,19 @@ OnCellLongClickListener, GameListener, FieldListener {
     protected void onResume() {
         super.onResume();
         setOpenCellMode();
+        game.resume();
     }
     
     @Override
     protected void onPause() {
         super.onPause();
-        secondsPastView.stop();
+        game.stop();
     }
     
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_GAME, game);
-        outState.putLong(EXTRA_LAST_TIMER_BASE, lastTimerBase);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor prefEdit = prefs.edit();
         prefEdit.putString(PREF_KEY_LEVEL, level.toString());
@@ -261,10 +257,13 @@ OnCellLongClickListener, GameListener, FieldListener {
                 break;
                 
             case RUNNING:
-                lastTimerBase = game.getStartMillis();
                 secondsPastView.setBase(game.getStartMillis());
                 secondsPastView.start();
                 newGameButton.setImageResource(R.drawable.new_game);
+                break;
+                
+            case STOPPED:
+                secondsPastView.stop();
                 break;
                 
             case LOST:

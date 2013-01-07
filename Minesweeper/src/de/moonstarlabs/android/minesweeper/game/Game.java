@@ -18,6 +18,7 @@ public class Game implements Parcelable {
     private Field field;
     private Status status = Status.NEW;
     private long startMillis;
+    private long stopMillis;
     
     private final Set<GameListener> listeners = new HashSet<GameListener>();
     
@@ -99,11 +100,7 @@ public class Game implements Parcelable {
         }
         
         if (isGameWon()) {
-            status = Status.WON;
-            
-            for (GameListener listener : listeners) {
-                listener.onGameStatusChanged(status);
-            }
+            updateStatusAndListeners(Status.WON);
         }
     }
     
@@ -142,11 +139,7 @@ public class Game implements Parcelable {
         }
         
         if (isGameWon()) {
-            status = Status.WON;
-            
-            for (GameListener listener : listeners) {
-                listener.onGameStatusChanged(status);
-            }
+            updateStatusAndListeners(Status.WON);
         }
     }
     
@@ -171,6 +164,27 @@ public class Game implements Parcelable {
         }
         else {
             field.suspect(position);
+        }
+    }
+    
+    /**
+     * Stopt das Spiel, indem sich die Zeit merkt und benachrichtigt auch die Listeners.
+     */
+    public void stop() {
+        if (status == Status.RUNNING) {
+            stopMillis = SystemClock.elapsedRealtime();
+            updateStatusAndListeners(Status.STOPPED);
+        }
+    }
+    
+    /**
+     * Macht das Spiel wieder weiter, indem den Zeitunterschied berechnet
+     * und die Listeners benachrichtigt.
+     */
+    public void resume() {
+        if (status == Status.STOPPED) {
+            startMillis = SystemClock.elapsedRealtime() - (stopMillis - startMillis);
+            updateStatusAndListeners(Status.RUNNING);
         }
     }
     
@@ -212,18 +226,12 @@ public class Game implements Parcelable {
     
     private void initGameStart() {
         startMillis = SystemClock.elapsedRealtime();
-        status = Status.RUNNING;
-        for (GameListener listener : listeners) {
-            listener.onGameStatusChanged(status);
-        }
+        updateStatusAndListeners(Status.RUNNING);
     }
     
     private void initGameLost() {
         field.openAllMinedCells();
-        status = Status.LOST;
-        for (GameListener listener : listeners) {
-            listener.onGameStatusChanged(status);
-        }
+        updateStatusAndListeners(Status.LOST);
     }
     
     private boolean isGameWon() {
@@ -232,6 +240,13 @@ public class Game implements Parcelable {
     
     private int computeMinesLeft() {
         return field.getMinedCellsCount() - field.getMarkedCellsCount();
+    }
+    
+    private void updateStatusAndListeners(final Status newStatus) {
+        status = newStatus;
+        for (GameListener listener: listeners) {
+            listener.onGameStatusChanged(newStatus);
+        }
     }
     
     /**
@@ -269,6 +284,11 @@ public class Game implements Parcelable {
         RUNNING,
         
         /**
+         * Spiel wurde gestoppt.
+         */
+        STOPPED,
+        
+        /**
          * Spiel wurde gewonnen.
          */
         WON,
@@ -289,6 +309,7 @@ public class Game implements Parcelable {
         out.writeParcelable(field, flags);
         out.writeString(status.toString());
         out.writeLong(startMillis);
+        out.writeLong(stopMillis);
     }
     
     /**
@@ -310,6 +331,7 @@ public class Game implements Parcelable {
         field = in.readParcelable(Field.class.getClassLoader());
         status = Status.valueOf(in.readString());
         startMillis = in.readLong();
+        stopMillis = in.readLong();
     }
     
 }
