@@ -97,6 +97,11 @@ public class Game implements Parcelable {
             if (!field.openUnmarkedNeighbours(position)) {
                 field.openAllMinedCells();
                 status = Status.LOST;
+                
+                for (GameListener listener : listeners) {
+                    listener.onGameStatusChanged(status);
+                }
+                return;
             }
         }
         else {
@@ -131,6 +136,11 @@ public class Game implements Parcelable {
             if (!field.openUnmarkedNeighbours(position)) {
                 field.openAllMinedCells();
                 status = Status.LOST;
+                
+                for (GameListener listener : listeners) {
+                    listener.onGameStatusChanged(status);
+                }
+                return;
             }
         }
         else {
