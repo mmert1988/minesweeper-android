@@ -28,7 +28,7 @@ public class Game implements Parcelable {
      *            Schwierigkeits-Level des Spiels
      */
     public Game(final DifficultyLevel level) {
-        initGame(level);
+        initNewGame(level);
     }
     
     /**
@@ -75,7 +75,7 @@ public class Game implements Parcelable {
      */
     public void openCell(final int position) {
         if (status == Status.NEW) {
-            start();
+            initGameStart();
         }
         
         if (status != Status.RUNNING
@@ -84,23 +84,13 @@ public class Game implements Parcelable {
         }
         
         if (field.getCell(position).isMined()) {
-            field.openAllMinedCells();
-            status = Status.LOST;
-            
-            for (GameListener listener : listeners) {
-                listener.onGameStatusChanged(status);
-            }
+            initGameLost();
             return;
         }
         
         if (field.getCell(position).isOpen() && field.calculateMinedNeighbours(position) > 0) {
             if (!field.openUnmarkedNeighbours(position)) {
-                field.openAllMinedCells();
-                status = Status.LOST;
-                
-                for (GameListener listener : listeners) {
-                    listener.onGameStatusChanged(status);
-                }
+                initGameLost();
                 return;
             }
         }
@@ -125,7 +115,7 @@ public class Game implements Parcelable {
      */
     public void toggleMarkCell(final int position) {
         if (status == Status.NEW) {
-            start();
+            initGameStart();
         }
         
         if (status != Status.RUNNING) {
@@ -134,12 +124,7 @@ public class Game implements Parcelable {
         
         if (field.getCell(position).isOpen() && field.calculateMinedNeighbours(position) > 0) {
             if (!field.openUnmarkedNeighbours(position)) {
-                field.openAllMinedCells();
-                status = Status.LOST;
-                
-                for (GameListener listener : listeners) {
-                    listener.onGameStatusChanged(status);
-                }
+                initGameLost();
                 return;
             }
         }
@@ -173,7 +158,7 @@ public class Game implements Parcelable {
      */
     public void toggleSuspectCell(final int position) {
         if (status == Status.NEW) {
-            start();
+            initGameStart();
         }
         
         Cell cell = field.getCell(position);
@@ -209,7 +194,7 @@ public class Game implements Parcelable {
         listeners.remove(listener);
     }
     
-    private void initGame(final DifficultyLevel level) {
+    private void initNewGame(final DifficultyLevel level) {
         switch (level) {
             case EASY:
                 field = RectangularField.random(9, 9, 10);
@@ -225,20 +210,28 @@ public class Game implements Parcelable {
         }
     }
     
+    private void initGameStart() {
+        startMillis = SystemClock.elapsedRealtime();
+        status = Status.RUNNING;
+        for (GameListener listener : listeners) {
+            listener.onGameStatusChanged(status);
+        }
+    }
+    
+    private void initGameLost() {
+        field.openAllMinedCells();
+        status = Status.LOST;
+        for (GameListener listener : listeners) {
+            listener.onGameStatusChanged(status);
+        }
+    }
+    
     private boolean isGameWon() {
         return field.getOpenedCellsCount() == field.getCellsCount() - field.getMinedCellsCount();
     }
     
     private int computeMinesLeft() {
         return field.getMinedCellsCount() - field.getMarkedCellsCount();
-    }
-    
-    private void start() {
-        startMillis = SystemClock.elapsedRealtime();
-        status = Status.RUNNING;
-        for (GameListener listener : listeners) {
-            listener.onGameStatusChanged(status);
-        }
     }
     
     /**
