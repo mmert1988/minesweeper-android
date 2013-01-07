@@ -6,7 +6,6 @@ import java.util.Set;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.util.Pair;
 
 import de.moonstarlabs.android.minesweeper.model.Cell;
 import de.moonstarlabs.android.minesweeper.model.Field;

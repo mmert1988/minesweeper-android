@@ -22,6 +22,8 @@ public class HighscoresDialogFragment extends DialogFragment {
     /**
      * Implementierung einer statischen newInstance-Methode als eine Best Practice, sowie von Android's Developer-Seite empfohlen wird.
      * @return new {@link HighscoresDialogFragment} intance
+     * @param names Namen der Highscorer von easy bis hard
+     * @param millis Millis Leistungen der Highscorer von easy bis hard
      */
     public static HighscoresDialogFragment newInstance(final String[] names, final long[] millis) {
         HighscoresDialogFragment instance = new HighscoresDialogFragment();
