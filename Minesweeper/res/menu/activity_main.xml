@@ -22,4 +22,9 @@
             android:title="@string/pref_game_difficulty_hard"/>
     </group>
 
+    <item
+        android:id="@+id/menu_view_highscores"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/menu_view_highscores"/>
+
 </menu>

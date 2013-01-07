@@ -60,6 +60,15 @@ public class Game implements Parcelable {
     }
     
     /**
+     * Gibt die Stopzeit des Spiels in Millisekunden zurück.
+     * 
+     * @return die Stopzeit des Spiels in Millisekunden zurück
+     */
+    public long getStopMillis() {
+        return stopMillis;
+    }
+    
+    /**
      * Gibt das Spielfeld zurück.
      * 
      * @return das Spielfeld
@@ -100,7 +109,7 @@ public class Game implements Parcelable {
         }
         
         if (isGameWon()) {
-            updateStatusAndListeners(Status.WON);
+            initGameWon();
         }
     }
     
@@ -139,7 +148,7 @@ public class Game implements Parcelable {
         }
         
         if (isGameWon()) {
-            updateStatusAndListeners(Status.WON);
+            initGameWon();
         }
     }
     
@@ -168,7 +177,8 @@ public class Game implements Parcelable {
     }
     
     /**
-     * Stopt das Spiel, indem sich die Zeit merkt und benachrichtigt auch die Listeners.
+     * Stopt das Spiel, indem sich die Zeit merkt und benachrichtigt auch die
+     * Listeners.
      */
     public void stop() {
         if (status == Status.RUNNING) {
@@ -178,8 +188,8 @@ public class Game implements Parcelable {
     }
     
     /**
-     * Macht das Spiel wieder weiter, indem den Zeitunterschied berechnet
-     * und die Listeners benachrichtigt.
+     * Macht das Spiel wieder weiter, indem den Zeitunterschied berechnet und
+     * die Listeners benachrichtigt.
      */
     public void resume() {
         if (status == Status.STOPPED) {
@@ -234,6 +244,11 @@ public class Game implements Parcelable {
         updateStatusAndListeners(Status.LOST);
     }
     
+    private void initGameWon() {
+        stopMillis = SystemClock.elapsedRealtime();
+        updateStatusAndListeners(Status.WON);
+    }
+    
     private boolean isGameWon() {
         return field.getOpenedCellsCount() == field.getCellsCount() - field.getMinedCellsCount();
     }
@@ -244,7 +259,7 @@ public class Game implements Parcelable {
     
     private void updateStatusAndListeners(final Status newStatus) {
         status = newStatus;
-        for (GameListener listener: listeners) {
+        for (GameListener listener : listeners) {
             listener.onGameStatusChanged(newStatus);
         }
     }

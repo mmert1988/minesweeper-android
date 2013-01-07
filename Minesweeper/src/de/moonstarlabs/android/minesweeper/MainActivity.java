@@ -1,25 +1,22 @@
 package de.moonstarlabs.android.minesweeper;
 
-import android.app.Activity;
-import android.content.Context;
+import static de.moonstarlabs.android.minesweeper.Preferences.*;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.widget.Chronometer;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
+import de.moonstarlabs.android.minesweeper.fragment.HighscoresDialogFragment;
+import de.moonstarlabs.android.minesweeper.fragment.NewHighscoreDialogFragment;
 import de.moonstarlabs.android.minesweeper.game.ClickModeState;
 import de.moonstarlabs.android.minesweeper.game.Game;
 import de.moonstarlabs.android.minesweeper.game.Game.DifficultyLevel;
@@ -29,25 +26,22 @@ import de.moonstarlabs.android.minesweeper.game.OpenCellModeState;
 import de.moonstarlabs.android.minesweeper.game.ToggleMarkModeState;
 import de.moonstarlabs.android.minesweeper.model.FieldListener;
 import de.moonstarlabs.android.minesweeper.model.RectangularField;
-import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter;
+import de.moonstarlabs.android.minesweeper.task.RefreshFieldViewTask;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnCellClickListener;
 import de.moonstarlabs.android.minesweeper.widget.RectangularFieldAdapter.OnCellLongClickListener;
 
 /**
  * Die Haupt-Activity zur Darstellung des Spieldfeldes.
  */
-public class MainActivity extends Activity implements OnClickListener, OnCellClickListener,
+public class MainActivity extends FragmentActivity implements OnClickListener, OnCellClickListener,
 OnCellLongClickListener, GameListener, FieldListener {
     private static final ClickModeState OPEN_CELL_CLICK_MODE_STATE = new OpenCellModeState();
     private static final ClickModeState SET_FLAG_CLICK_MODE_STATE = new ToggleMarkModeState();
     private static final String EXTRA_GAME = "game";
-    private static final String EXTRA_LAST_TIMER_BASE = "timerBase";
-    private static final String PREF_KEY_LEVEL = "difficulty level";
     
     private Game game;
     private ClickModeState clickModeState = OPEN_CELL_CLICK_MODE_STATE;
     
-    private TableLayout fieldView;
     private ImageButton newGameButton;
     private ImageButton switchClickModeButton;
     private TextView minesLeftView;
@@ -61,7 +55,7 @@ OnCellLongClickListener, GameListener, FieldListener {
         super.onCreate(savedInstanceState);
         setViews();
         
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         level = DifficultyLevel.valueOf(prefs.getString(PREF_KEY_LEVEL, DifficultyLevel.EASY.toString()));
         
         if (savedInstanceState != null) {
@@ -84,7 +78,6 @@ OnCellLongClickListener, GameListener, FieldListener {
         minesLeftView = (TextView)findViewById(R.id.minesLeftView);
         secondsPastView = (Chronometer)findViewById(R.id.secondsPastView);
         
-        fieldView = (TableLayout)findViewById(R.id.fieldView);
         hScroll = (HorizontalScrollView)findViewById(R.id.horizontalScroll);
     }
     
@@ -105,7 +98,7 @@ OnCellLongClickListener, GameListener, FieldListener {
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(EXTRA_GAME, game);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor prefEdit = prefs.edit();
         prefEdit.putString(PREF_KEY_LEVEL, level.toString());
         prefEdit.commit();
@@ -133,6 +126,9 @@ OnCellLongClickListener, GameListener, FieldListener {
             case R.id.menu_difficulty_hard:
                 level = DifficultyLevel.HARD;
                 initNewGame(level);
+                return true;
+            case R.id.menu_view_highscores:
+                showHighscores();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -182,6 +178,27 @@ OnCellLongClickListener, GameListener, FieldListener {
     
     @Override
     public void onGameStatusChanged(final Status status) {
+        if (status == Status.WON) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            long wonTime = game.getStopMillis() - game.getStartMillis();
+            long highscoreTime = Long.MAX_VALUE;
+            switch(level) {
+                case EASY:
+                    highscoreTime = prefs.getLong(PREF_EASY_HIGHSORE_MILLIS, Long.MAX_VALUE);
+                    break;
+                case MEDIUM:
+                    highscoreTime = prefs.getLong(PREF_MEDIUM_HIGHSORE_MILLIS, Long.MAX_VALUE);
+                    break;
+                case HARD:
+                    highscoreTime = prefs.getLong(PREF_HARD_HIGHSORE_MILLIS, Long.MAX_VALUE);
+                    break;
+                default:
+                    break;
+            }
+            if (wonTime < highscoreTime) {
+                NewHighscoreDialogFragment.newInstance().show(getSupportFragmentManager(), "game won dialog");
+            }
+        }
         updateViewsOnStatusChange(status);
     }
     
@@ -195,8 +212,8 @@ OnCellLongClickListener, GameListener, FieldListener {
         refreshFieldView(game);
     }
     
-    private void initNewGame(final DifficultyLevel level) {
-        game = new Game(level);
+    private void initNewGame(final DifficultyLevel l) {
+        game = new Game(l);
         initViews(game);
         refreshFieldView(game);
         updateViewsOnStatusChange(game.getStatus());
@@ -209,43 +226,7 @@ OnCellLongClickListener, GameListener, FieldListener {
     }
     
     private void refreshFieldView(final Game g) {
-        hScroll.post(new Runnable() {
-            @Override
-            public void run() {
-                RectangularFieldAdapter adapter = new RectangularFieldAdapter(MainActivity.this, (RectangularField)g.getField());
-                adapter.setOnCellClickListener(MainActivity.this);
-                adapter.setOnCellLongClickListener(MainActivity.this);
-                hScroll.removeAllViews();
-                fieldView = createView(adapter);
-                hScroll.addView(fieldView);
-            }
-        });
-    }
-    
-    private TableLayout createView(final RectangularFieldAdapter adapter) {
-        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        TableLayout table = (TableLayout)inflater.inflate(R.layout.rectangular_field_view, null);
-        
-        for (int i = 0; i < adapter.getRows(); i++) {
-            TableRow row = (TableRow)inflater.inflate(R.layout.cell_row, null);
-            row.setGravity(Gravity.CENTER_HORIZONTAL);
-            table.addView(row);
-        }
-        int position = 0;
-        for (int i = 0; i < adapter.getRows(); i++) {
-            TableRow row = (TableRow)table.getChildAt(i);
-            for (int j = 0; j < adapter.getColumns(); j++) {
-                View child = adapter.getView(position, null, null);
-                child.measure(MeasureSpec.EXACTLY, MeasureSpec.EXACTLY);
-                row.addView(child);
-                position++;
-            }
-        }
-        TableLayout.LayoutParams params = new TableLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-        table.setLayoutParams(params);
-        return table;
+        hScroll.post(new RefreshFieldViewTask(this, (RectangularField)g.getField(), hScroll));
     }
     
     private void updateViewsOnStatusChange(final Game.Status status) {
@@ -278,6 +259,48 @@ OnCellLongClickListener, GameListener, FieldListener {
             default:
                 break;
         }
+    }
+    
+    private void showHighscores() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String[] names = new String[] {
+                prefs.getString(PREF_EASY_HIGHSCORE_NAME, ""),
+                prefs.getString(PREF_MEDIUM_HIGHSCORE_NAME, ""),
+                prefs.getString(PREF_HARD_HIGHSCORE_NAME, "")
+        };
+        long[] millis = new long[] {
+                prefs.getLong(PREF_EASY_HIGHSORE_MILLIS, Long.MAX_VALUE),
+                prefs.getLong(PREF_MEDIUM_HIGHSORE_MILLIS, Long.MAX_VALUE),
+                prefs.getLong(PREF_HARD_HIGHSORE_MILLIS, Long.MAX_VALUE)
+        };
+        
+        HighscoresDialogFragment.newInstance(names, millis).show(getSupportFragmentManager(), "highscores dialog");
+    }
+    
+    /**
+     * Startet Dialog zum Registrieren eines Gewinns.
+     * @param name Name des Spielers
+     */
+    public void setHighscore(final String name) {
+        long wonTime = game.getStopMillis() - game.getStartMillis();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        switch(level) {
+            case EASY:
+                prefs.edit().putLong(PREF_EASY_HIGHSORE_MILLIS, wonTime).commit();
+                prefs.edit().putString(PREF_EASY_HIGHSCORE_NAME, name).commit();
+                break;
+            case MEDIUM:
+                prefs.edit().putLong(PREF_MEDIUM_HIGHSORE_MILLIS, wonTime).commit();
+                prefs.edit().putString(PREF_MEDIUM_HIGHSCORE_NAME, name).commit();
+                break;
+            case HARD:
+                prefs.edit().putLong(PREF_HARD_HIGHSORE_MILLIS, wonTime).commit();
+                prefs.edit().putString(PREF_HARD_HIGHSCORE_NAME, name).commit();
+                break;
+            default:
+                break;
+        }
+        showHighscores();
     }
     
 }
