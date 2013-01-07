@@ -213,6 +213,7 @@ OnCellLongClickListener, GameListener, FieldListener {
     }
     
     private void initNewGame(final DifficultyLevel l) {
+    	setOpenCellMode();
         game = new Game(l);
         initViews(game);
         refreshFieldView(game);

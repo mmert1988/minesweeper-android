@@ -233,12 +233,6 @@ public class Game implements Parcelable {
             default:
                 throw new IllegalArgumentException("Difficulty level is not supported: " + level);
         }
-        Set<Pair<Integer, Integer>> mineCoords = new HashSet<Pair<Integer, Integer>>();
-        mineCoords.add(new Pair<Integer, Integer>(0, 0));
-        mineCoords.add(new Pair<Integer, Integer>(1, 1));
-        mineCoords.add(new Pair<Integer, Integer>(2, 2));
-        mineCoords.add(new Pair<Integer, Integer>(3, 3));
-        field = new RectangularField(4, 4, mineCoords);
     }
     
     private void initGameStart() {
